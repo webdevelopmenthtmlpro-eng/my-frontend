@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SwiftDelivery | Airfreight Logistics</title>
+  <link rel="stylesheet" href="styles.css" />
+  <!-- AOS styles in the head so they load before animations are triggered -->
+  <link href="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.css" rel="stylesheet">
+</head>
+<body>
+  <!-- Header with Blur Effect -->
+  <header class="header blur-header">
+    <div class="logo">✈️ SwiftDelivery</div>
+    <nav class="top-nav">
+      <ul>
+        <li><a href="#home" data-i18n="home">Home</a></li>
+        <li><a href="#gallery" data-i18n="gallery">Gallery</a></li>
+        <li><a href="#services" data-i18n="services">Services</a></li>
+        <li><a href="#track" data-i18n="track">Track</a></li>
+        <li><a href="#login" data-i18n="login">Login</a></li>
+        <li><a href="#register" data-i18n="register">Register</a></li>
+        <li>
+          <select id="languageSelect">
+            <option value="en">English</option>
+            <option value="fr">Français</option>
+            <option value="es">Español</option>
+            <option value="de">Deutsch</option>
+            <option value="zh">中文</option>
+            <option value="ar">العربية</option>
+          </select>
+        </li>
+      </ul>
+    </nav>
+    <div class="theme-switcher">
+      <label for="themeToggle">🌙</label>
+      <input type="checkbox" id="themeToggle" />
+    </div>
+    <button id="menuToggle">☰</button>
+  </header>
+
+  <!-- Animated Sidebar -->
+  <aside id="sideMenu" class="animated-sidebar">
+    <button id="closeMenu">✖</button>
+    <ul>
+      <li><a href="#home" data-i18n="home">Home</a></li>
+      <li><a href="#gallery" data-i18n="gallery">Gallery</a></li>
+      <li><a href="#services" data-i18n="services">Services</a></li>
+      <li><a href="#track" data-i18n="track">Track</a></li>
+      <li><a href="#login" data-i18n="login">Login</a></li>
+      <li><a href="#register" data-i18n="register">Register</a></li>
+      <li>
+        <select id="sidebarLanguageSelect">
+          <option value="en">English</option>
+          <option value="fr">Français</option>
+          <option value="es">Español</option>
+          <option value="de">Deutsch</option>
+          <option value="zh">中文</option>
+          <option value="ar">العربية</option>
+        </select>
+      </li>
+    </ul>
+  </aside>
+
+  <!-- Hero Section -->
+  <section id="home" class="hero">
+    <div class="hero-content">
+      <h1 data-i18n="welcome">SwiftDelivery Airfreight Logistics</h1>
+      <p data-i18n="intro">Global cargo solutions with speed, safety, and precision.</p>
+      <a href="#contact" class="cta-button" data-i18n="getStarted">Get Started</a>
+    </div>
+  </section>
+
+  <!-- Gallery Section -->
+  <section id="gallery" class="gallery">
+    <h2 data-i18n="galleryTitle">Fleet &amp; Facilities</h2>
+    <div class="gallery-slider">
+      <div class="slide"><img src="https://i.ibb.co/HfdMYGr9/Air-1-2560x1060.jpg" alt="Cargo Aircraft" /></div>
+      <div class="slide"><img src="https://i.ibb.co/cS8fDdg5/couriers-unloading-packages-from-a-delivery-truck.jpg" alt="Cargo Warehouse" /></div>
+      <div class="slide"><img src="https://i.ibb.co/Fbyy5gdn/istockphoto-1472189910-612x612.webp" alt="Loading Operation" /></div>
+      <div class="slide"><img src="https://i.ibb.co/1YkQxrHt/person-wearing-orange-tshirt-name-tag-11547159641.webp" alt="SwiftDelivery Team" /></div>
+      <div class="slide"><img src="https://i.ibb.co/SD706kNR/istockphoto-1297658517-612x612.jpg" alt="Real-time Tracking" /></div>
+    </div>
+  </section>
+
+  <!-- Services Section -->
+  <section id="services" class="services">
+    <h2 data-i18n="servicesTitle">Our Services</h2>
+    <div class="service-grid">
+      <div class="service-card">
+        <h3 data-i18n="service1">Airfreight Express</h3>
+        <p data-i18n="service1Desc">Priority cargo delivery with guaranteed timelines, ensuring your urgent shipments reach their destination quickly and safely.</p>
+      </div>
+      <div class="service-card">
+        <h3 data-i18n="service2">Global Warehousing</h3>
+        <p data-i18n="service2Desc">Secure storage solutions across strategically located international hubs, enabling efficient inventory management and quick distribution.</p>
+      </div>
+      <div class="service-card">
+        <h3 data-i18n="service3">Customs Clearance</h3>
+        <p data-i18n="service3Desc">Expert handling of documentation and border processing to expedite shipment clearance, minimizing delays and compliance risks.</p>
+      </div>
+      <div class="service-card">
+        <h3 data-i18n="service4">Temperature-Controlled Cargo</h3>
+        <p data-i18n="service4Desc">Specialized transport and storage for pharmaceuticals, perishables, and sensitive goods requiring strict temperature regulation.</p>
+      </div>
+      <div class="service-card">
+        <h3 data-i18n="service5">Dangerous Goods Transport</h3>
+        <p data-i18n="service5Desc">Certified and compliant handling of hazardous materials with stringent safety standards and legal requirements.</p>
+      </div>
+    </div>
+  </section>
+
+    <!-- Booking Dashboard -->
+    <section id="booking" class="booking">
+      <h2 data-i18n="bookingTitle">Booking Dashboard</h2>
+      <form action="https://api.web3forms.com/submit" method="POST">
+        <input type="hidden" name="access_key" value="6f0cf1cf-d8ed-410b-a733-9ee33d4643ba" />
+        <input type="text" name="name" required placeholder="Full Name" data-i18n="bookingNamePlaceholder" />
+        <input type="email" name="email" required placeholder="Email Address" data-i18n="bookingEmailPlaceholder" />
+        <textarea name="message" required placeholder="Booking Details (date, cargo type, destination)" data-i18n="bookingMessagePlaceholder"></textarea>
+        <button type="submit" data-i18n="bookingSubmitButton">Submit Booking</button>
+      </form>
+    </section>
+
+  <!-- Testimonials Section -->
+  <section id="testimonials" class="testimonials">
+    <h2 data-i18n="testimonialsTitle">Customer Testimonials</h2>
+    <div class="testimonial-grid">
+      <div class="testimonial-card">
+        <p data-i18n="testimonial1Text">"SwiftDelivery got our medical supplies across borders in record time. Highly recommended!"</p>
+        <span data-i18n="testimonial1Author">- Dr. Amina Yusuf</span>
+      </div>
+      <div class="testimonial-card">
+        <p data-i18n="testimonial2Text">"Their tracking system is top-notch. I knew exactly where my shipment was at all times."</p>
+        <span data-i18n="testimonial2Author">- James Okoro</span>
+      </div>
+      <div class="testimonial-card">
+        <p data-i18n="testimonial3Text">"Professional, fast, and reliable. SwiftDelivery is our go-to logistics partner."</p>
+        <span data-i18n="testimonial3Author">- GlobalTech Ltd.</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- Contact Section -->
+  <section id="contact" class="contact">
+    <h2 data-i18n="contactTitle">Contact Us</h2>
+    <form action="https://api.web3forms.com/submit" method="POST">
+      <input type="hidden" name="access_key" value="237d4b4c-c4de-472e-a7f1-d22490311751">
+      <input type="text" name="name" required placeholder="Your Name" />
+      <input type="email" name="email" required placeholder="Your Email" />
+      <textarea name="message" required placeholder="Your Message"></textarea>
+      <button type="submit" data-i18n="submitButton">Submit Form</button>
+    </form>
+  </section>
+
+  <!-- Login Section -->
+  <section id="login" class="login">
+    <h2 data-i18n="loginTitle">Client Login</h2>
+    <form action="https://api.web3forms.com/submit" method="POST">
+      <input type="hidden" name="access_key" value="237d4b4c-c4de-472e-a7f1-d22490311751">
+      <input type="email" name="email" required placeholder="Email" />
+      <input type="password" name="password" required placeholder="Password" />
+      <button type="submit" data-i18n="loginButton">Login</button>
+    </form>
+  </section>
+
+  <!-- Register Section -->
+  <section id="register" class="register">
+    <h2 data-i18n="registerTitle">New Client Registration</h2>
+    <form>
+      <div id="registerSection">
+  <input type="text" id="regUsername" placeholder="Username" required data-i18n="registerUsernamePlaceholder" />
+  <input type="password" id="regPassword" placeholder="Password" required data-i18n="registerPasswordPlaceholder" />
+  <button id="registerBtn" type="button" data-i18n="registerButton">Register</button>
+      </div>
+    </form>
+  </section>
+  <!-- Pickup & Delivery Section -->
+  <section id="track" class="tracking">
+    <h2 data-i18n="trackTitle">Pickup &amp; Delivery Tracking</h2>
+    <form id="trackingForm">
+      <div class="form-row">
+        <input type="text" name="pickup" required placeholder="Pickup Address" />
+        <input type="text" name="delivery" required placeholder="Delivery Address" />
+      </div>
+      <input type="text" id="trackingId" name="trackingId" required placeholder="Tracking ID" />
+      <button type="submit" data-i18n="trackButton">Track Shipment</button>
+    </form>
+    <div class="map-container">
+      <iframe
+        src="https://www.google.com/maps/embed?pb=!1m18..." 
+        width="100%"
+        height="300"
+        style="border:0;"
+        allowfullscreen
+        loading="lazy"
+        title="Live Delivery Tracking Map"
+        aria-label="Google Maps tracking view">
+      </iframe>
+    </div>
+  </section>
+
+  <!-- FAQ Section -->
+  <section id="faq" class="faq">
+    <h2 data-i18n="faqTitle">Frequently Asked Questions</h2>
+    <details>
+      <summary data-i18n="faq1Q">How fast is airfreight delivery?</summary>
+      <p data-i18n="faq1A">Most airfreight shipments arrive within 24–48 hours, depending on the destination, flight availability, and customs processing. We prioritize speed and reliability, ensuring your cargo reaches its destination as quickly as possible. Expedited options are available for urgent shipments.</p>
+    </details>
+    <details>
+      <summary data-i18n="faq2Q">Do you handle international customs?</summary>
+      <p data-i18n="faq2A">Yes, we provide comprehensive customs clearance services for all international shipments. Our experienced team navigates complex regulations and documentation to ensure smooth border transitions, minimizing delays and avoiding compliance issues.</p>
+    </details>
+    <details>
+      <summary data-i18n="faq3Q">Can I track my cargo in real time?</summary>
+      <p data-i18n="faq3A">Absolutely. Our advanced tracking system offers live updates, GPS location data, and status notifications throughout the journey. You’ll have full visibility from pickup to final delivery, accessible via our online portal or mobile app.</p>
+    </details>
+    <details>
+      <summary data-i18n="faq4Q">Do you offer temperature-controlled shipping?</summary>
+      <p data-i18n="faq4A">Yes, we specialize in cold-chain logistics tailored for sensitive goods such as pharmaceuticals, vaccines, fresh produce, and other perishables. Our temperature-controlled containers and monitoring systems maintain optimal conditions throughout transit.</p>
+    </details>
+    <details>
+      <summary data-i18n="faq5Q">Is weekend delivery available?</summary>
+      <p data-i18n="faq5A">Weekend delivery is available in select regions and for eligible service tiers. To confirm availability for your shipment, please contact our support team. We strive to accommodate your schedule with flexible delivery options.</p>
+    </details>
+  </section>
+
+  <!-- Live Chat Support -->
+  <section id="livechat" class="livechat">
+    <h2 data-i18n="liveChatTitle">Live Chat Support</h2>
+    <form action="https://api.web3forms.com/submit" method="POST">
+      <input type="hidden" name="access_key" value="6f0cf1cf-d8ed-410b-a733-9ee33d4643ba">
+      <input type="text" name="name" required placeholder="Your Name" data-i18n="liveChatNamePlaceholder" />
+      <input type="email" name="email" required placeholder="Your Email" data-i18n="liveChatEmailPlaceholder" />
+      <textarea name="message" required placeholder="Your Message" data-i18n="liveChatMessagePlaceholder"></textarea>
+      <button type="submit" data-i18n="submitButton">Submit Form</button>
+    </form>
+  </section>
+
+  <!-- Chatbot (keep near the end for clarity) -->
+  <div id="chatbot" class="chatbot">
+    <div class="chat-header">
+      <span data-i18n="chatbotTitle">SwiftDelivery Bot</span>
+      <button id="closeChatbot" aria-label="Close chat">✖</button>
+    </div>
+    <div class="chat-body" id="chatBody">
+      <div class="bot-message" data-i18n="chatbotGreeting">Hi there! How can I help you today?</div>
+    </div>
+    <div class="chat-input">
+      <input type="text" id="chatMessage" placeholder="Type your message..." data-i18n="chatMessagePlaceholder" />
+      <button id="sendChat" type="button" data-i18n="sendButton">Send</button>
+    </div>
+  </div>
+
+  <!-- Newsletter Signup -->
+  <section class="newsletter">
+    <h2 data-i18n="newsletterTitle">Stay Updated</h2>
+    <p data-i18n="newsletterText">Subscribe to our newsletter for airfreight tips, updates, and exclusive offers.</p>
+    <form id="newsletterForm">
+      <label for="newsletterEmail" data-i18n="emailLabel">Email</label>
+      <input type="email" id="newsletterEmail" name="newsletterEmail" required />
+      <button type="submit" data-i18n="subscribeButton">Subscribe</button>
+    </form>
+  </section>
+
+  <!-- Social Media Links -->
+  <section class="social-media">
+    <h2 data-i18n="followUs">Follow Us</h2>
+    <ul class="social-icons">
+      <li><a href="#" aria-label="Facebook">ⓕ</a></li>
+      <li><a href="#" aria-label="Twitter">𝕏</a></li>
+      <li><a href="#" aria-label="Instagram">🅾</a></li>
+      <li><a href="#" aria-label="LinkedIn">[in]</a></li>
+    </ul>
+  </section>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="footer-links">
+      <div class="footer-column">
+        <h4 data-i18n="company">Company</h4>
+        <ul>
+          <li><a href="#about" data-i18n="about">About Us</a></li>
+          <li><a href="#services" data-i18n="services">Services</a></li>
+          <li><a href="#gallery" data-i18n="gallery">Gallery</a></li>
+        </ul>
+      </div>
+      <div class="footer-column">
+        <h4 data-i18n="support">Support</h4>
+        <ul>
+          <li><a href="#faq" data-i18n="faq">FAQ</a></li>
+          <li><a href="#contact" data-i18n="contact">Contact</a></li>
+          <li><a href="#" data-i18n="helpCenter">Help Center</a></li>
+        </ul>
+      </div>
+      <div class="footer-column">
+        <h4 data-i18n="legal">Legal</h4>
+        <ul>
+          <li><a href="#" data-i18n="privacy">Privacy Policy</a></li>
+          <li><a href="#" data-i18n="terms">Terms of Service</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <p data-i18n="footerNote">© 2025 SwiftDelivery. All rights reserved.</p>
+    </div>
+  </footer>
+
+  <!-- External libraries and widgets -->
+  <script src="https://unpkg.com/@lottiefiles/lottie-player@latest/dist/lottie-player.js"></script>
+  <lottie-player src="https://assets2.lottiefiles.com/packages/lf20_hzgq1iov.json" background="transparent" speed="1" style="width: 60px; height: 60px;" loop autoplay></lottie-player>
+
+  <!-- AOS (Animate On Scroll) script - ensure it's loaded before calling init -->
+  <script src="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.js"></script>
+  <script>
+    if (window.AOS && typeof AOS.init === 'function') {
+      AOS.init();
+    }
+  </script>
+
+  <script type="text/javascript">
+    var Tawk_API=Tawk_API||{}, Tawk_LoadStart=new Date();
+    (function(){
+      var s=document.createElement("script");
+      s.async=true;
+      s.src='https://embed.tawk.to/YOUR_PROPERTY_ID/default';
+      s.charset='UTF-8';
+      // crossorigin should be 'anonymous' or 'use-credentials' — use 'anonymous' for embeds
+      s.setAttribute('crossorigin','anonymous');
+      document.body.appendChild(s);
+    })();
+  </script>
+  
+  <!-- Load main script at the end -->
+  <script src="script.js"></script>
+</body>
+</html>
