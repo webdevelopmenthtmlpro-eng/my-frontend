@@ -1,0 +1,1990 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>🚚 Live Courier Tracking - SwiftDelivery</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.css">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    :root {
+      --primary-color: #0078d7;
+      --secondary-color: #00b6f1;
+      --accent-color: #4f46e5;
+      --success-color: #22c55e;
+      --warning-color: #f59e0b;
+      --error-color: #ef4444;
+      --text-light: #222;
+      --text-dark: #e7eaf1;
+      --bg-light: #f5f5f5;
+      --bg-dark: #0f172a;
+      --card-light: white;
+      --card-dark: #1e293b;
+      --border-light: #e5e7eb;
+      --border-dark: #334155;
+    }
+
+    html[data-theme="dark"] {
+      --text-light: #e2e8f0;
+      --bg-light: #0f172a;
+      --card-light: #1e293b;
+      --border-light: #334155;
+      color-scheme: dark;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+      background: var(--bg-light);
+      padding: 20px;
+      color: var(--text-light);
+      transition: background 0.2s ease-in-out, color 0.2s ease-in-out;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      background: var(--card-light);
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      overflow: hidden;
+    }
+
+    html[data-theme="dark"] .container {
+      box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+    }
+
+    .header {
+      background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+      color: white;
+      padding: 30px;
+      text-align: center;
+      animation: fadeInDown 0.6s ease-out;
+    }
+
+    .header h1 {
+      font-size: 28px;
+      margin-bottom: 10px;
+    }
+
+    .header p {
+      font-size: 16px;
+      opacity: 0.9;
+    }
+
+    .content {
+      padding: 30px;
+    }
+
+    .tabs-container {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 24px;
+      border-bottom: 2px solid var(--border-light);
+      overflow-x: auto;
+    }
+
+    .tab-btn {
+      padding: 12px 20px;
+      background: transparent;
+      border: none;
+      border-bottom: 3px solid transparent;
+      color: var(--text-light);
+      cursor: pointer;
+      font-weight: 500;
+      transition: all 0.3s ease;
+      white-space: nowrap;
+    }
+
+    .tab-btn:hover {
+      color: var(--primary-color);
+    }
+
+    .tab-btn.active {
+      color: var(--primary-color);
+      border-bottom-color: var(--primary-color);
+    }
+
+    .tab-btn .close-icon {
+      margin-left: 8px;
+      cursor: pointer;
+    }
+
+    .search-section {
+      margin-bottom: 30px;
+    }
+
+    .search-form {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 15px;
+      flex-wrap: wrap;
+    }
+
+    input[type="text"] {
+      flex: 1;
+      min-width: 200px;
+      padding: 12px 15px;
+      border: 2px solid var(--border-light);
+      border-radius: 8px;
+      font-size: 16px;
+      background: var(--card-light);
+      color: var(--text-light);
+      transition: all 0.3s ease;
+    }
+
+    input[type="text"]:focus {
+      outline: none;
+      border-color: var(--primary-color);
+      box-shadow: 0 0 0 3px rgba(0, 120, 215, 0.1);
+    }
+
+    button {
+      padding: 12px 24px;
+      background: var(--primary-color);
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    button:hover {
+      background: var(--secondary-color);
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(0, 120, 215, 0.3);
+    }
+
+    button:active {
+      transform: translateY(0);
+    }
+
+    button:disabled {
+      background: #cbd5e1;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    #courierMap {
+      height: 500px;
+      border-radius: 8px;
+      overflow: hidden;
+      margin-bottom: 30px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      animation: fadeIn 0.6s ease-out 0.2s both;
+    }
+
+    @media (max-width: 768px) {
+      #courierMap {
+        height: 300px;
+      }
+    }
+
+    .info-section {
+      display: none;
+      margin-top: 30px;
+    }
+
+    .info-section.active {
+      display: block;
+    }
+
+    .info-card {
+      background: transparent;
+      padding: 0;
+      border-radius: 0;
+      border: none;
+      box-shadow: none;
+      animation: none;
+      position: relative;
+      overflow: visible;
+    }
+
+    .info-card::before {
+      display: none;
+    }
+
+    .info-card h3 {
+      display: none;
+    }
+
+    /* Order Info Header Boxes */
+    .order-info-header {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 16px;
+      margin-bottom: 30px;
+      animation: fadeInDown 0.6s ease-out;
+    }
+
+    .order-info-box {
+      background: var(--card-light);
+      border: 1px solid var(--border-light);
+      border-radius: 12px;
+      padding: 20px;
+      text-align: center;
+      transition: all 0.3s ease;
+      position: relative;
+      overflow: hidden;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+    }
+
+    html[data-theme="dark"] .order-info-box {
+      border-color: #475569;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+    }
+
+    .order-info-box:hover {
+      border-color: #22c55e;
+      box-shadow: 0 4px 12px rgba(34, 197, 94, 0.1);
+      transform: translateY(-2px);
+    }
+
+    html[data-theme="dark"] .order-info-box:hover {
+      box-shadow: 0 4px 12px rgba(34, 197, 94, 0.2);
+    }
+
+    .order-info-box::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 2px;
+      background: linear-gradient(90deg, transparent, #22c55e, transparent);
+    }
+
+    .order-info-label {
+      font-size: 11px;
+      color: #9ca3af;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      font-weight: 700;
+      margin-bottom: 10px;
+    }
+
+    .order-info-value {
+      font-size: 15px;
+      color: var(--text-light);
+      font-weight: 700;
+      word-break: break-word;
+      line-height: 1.4;
+    }
+
+    /* Status Section */
+    .order-status-section {
+      background: var(--card-light);
+      border: 2px solid var(--border-light);
+      border-radius: 12px;
+      padding: 25px;
+      margin-bottom: 30px;
+      animation: fadeInUp 0.6s ease-out 0.1s both;
+    }
+
+    html[data-theme="dark"] .order-status-section {
+      border-color: #475569;
+    }
+
+    .order-status-header {
+      text-align: center;
+      margin-bottom: 0;
+    }
+
+    .order-status-label {
+      font-size: 12px;
+      color: #9ca3af;
+      margin-bottom: 8px;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+      font-weight: 600;
+    }
+
+    .order-status-title {
+      font-size: 26px;
+      font-weight: 900;
+      color: #22c55e;
+      margin-bottom: 8px;
+      letter-spacing: -0.5px;
+    }
+
+    .order-status-badge {
+      display: inline-block;
+      padding: 8px 16px;
+      border-radius: 20px;
+      font-weight: 700;
+      font-size: 12px;
+      letter-spacing: 0.3px;
+      background: #dcfce7;
+      color: #166534;
+      margin-bottom: 12px;
+    }
+
+    .order-status-info {
+      font-size: 12px;
+      color: #6b7280;
+      margin-top: 10px;
+    }
+
+    /* Progress Timeline */
+    .delivery-progress {
+      background: var(--card-light);
+      border: 2px solid var(--border-light);
+      border-radius: 12px;
+      padding: 32px 28px;
+      margin: 0;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+      animation: fadeInUp 0.6s ease-out 0.2s both;
+    }
+
+    html[data-theme="dark"] .delivery-progress {
+      border-color: #475569;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+    }
+
+    .timeline-label {
+      font-size: 12px;
+      font-weight: 700;
+      color: #9ca3af;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+      margin-bottom: 24px;
+      display: block;
+    }
+
+    .timeline-steps {
+      display: flex;
+      flex-direction: column;
+      position: relative;
+      padding: 8px 0;
+    }
+
+    .timeline-steps::before {
+      content: '';
+      position: absolute;
+      left: 20px;
+      top: 28px;
+      bottom: 0;
+      width: 16px;
+      background: linear-gradient(to bottom, #d1d5db 0%, #22c55e 28%, #22c55e 100%);
+      border-radius: 8px;
+      z-index: 0;
+    }
+
+    .timeline-step {
+      display: flex;
+      align-items: flex-start;
+      position: relative;
+      z-index: 1;
+      margin-bottom: 28px;
+      padding-left: 76px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .timeline-step:hover {
+      opacity: 0.85;
+    }
+
+    .timeline-step:last-child {
+      margin-bottom: 0;
+    }
+
+    .timeline-step-dot {
+      position: absolute;
+      left: 12px;
+      top: 0;
+      width: 24px;
+      height: 24px;
+      background: white;
+      border: 3px solid #d1d5db;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 12px;
+      font-weight: 900;
+      color: #22c55e;
+      flex-shrink: 0;
+      transition: all 0.3s ease;
+      z-index: 2;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+    }
+
+    .timeline-step.completed .timeline-step-dot {
+      border-color: #22c55e;
+      background: white;
+      color: #22c55e;
+      box-shadow: 0 2px 6px rgba(34, 197, 94, 0.15);
+    }
+
+    .timeline-step.current .timeline-step-dot {
+      background: #22c55e;
+      border-color: #22c55e;
+      width: 32px;
+      height: 32px;
+      font-size: 14px;
+      left: 8px;
+      top: -4px;
+      color: white;
+      box-shadow: 0 4px 12px rgba(34, 197, 94, 0.35);
+    }
+
+    .timeline-step-content {
+      flex: 1;
+    }
+
+    .timeline-step-label {
+      font-size: 14px;
+      font-weight: 700;
+      color: #6b7280;
+      margin-bottom: 4px;
+      letter-spacing: 0.3px;
+      transition: color 0.3s ease;
+      text-transform: uppercase;
+    }
+
+    .timeline-step.current .timeline-step-label {
+      color: #22c55e;
+      font-weight: 900;
+    }
+
+    .timeline-step.completed .timeline-step-label {
+      color: #6b7280;
+    }
+
+    .timeline-step-location {
+      font-size: 12px;
+      color: #9ca3af;
+      margin-bottom: 3px;
+      transition: color 0.3s ease;
+    }
+
+    .timeline-step-date {
+      font-size: 11px;
+      color: #d1d5db;
+      font-weight: 500;
+    }
+
+    /* Expanded Status Modal */
+    .status-modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.5);
+      z-index: 1000;
+      align-items: center;
+      justify-content: center;
+      animation: fadeIn 0.3s ease;
+    }
+
+    .status-modal.active {
+      display: flex;
+    }
+
+    .status-modal-content {
+      background: var(--card-light);
+      border-radius: 16px;
+      padding: 40px;
+      max-width: 500px;
+      width: 90%;
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+      animation: slideUp 0.3s ease;
+    }
+
+    html[data-theme="dark"] .status-modal-content {
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.4);
+    }
+
+    @keyframes slideUp {
+      from {
+        transform: translateY(20px);
+        opacity: 0;
+      }
+      to {
+        transform: translateY(0);
+        opacity: 1;
+      }
+    }
+
+    .status-modal-header {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+
+    .status-modal-title {
+      font-size: 24px;
+      font-weight: 900;
+      color: #22c55e;
+      margin-bottom: 10px;
+      text-transform: uppercase;
+    }
+
+    .status-modal-details {
+      background: var(--card-light);
+      border-radius: 12px;
+      padding: 20px;
+      margin-bottom: 20px;
+      border: 1px solid var(--border-light);
+    }
+
+    html[data-theme="dark"] .status-modal-details {
+      background: #0f172a;
+      border-color: #475569;
+    }
+
+    .status-modal-detail-item {
+      margin-bottom: 12px;
+    }
+
+    .status-modal-detail-item:last-child {
+      margin-bottom: 0;
+    }
+
+    .status-modal-detail-label {
+      font-size: 12px;
+      color: #6b7280;
+      font-weight: 700;
+      text-transform: uppercase;
+      margin-bottom: 4px;
+    }
+
+    .status-modal-detail-value {
+      font-size: 16px;
+      color: #1f2937;
+      font-weight: 600;
+    }
+
+    .status-modal-close {
+      text-align: center;
+    }
+
+    .status-modal-close-btn {
+      background: var(--border-light);
+      color: var(--text-light);
+      border: none;
+      padding: 10px 20px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: 600;
+      transition: all 0.3s ease;
+    }
+
+    html[data-theme="dark"] .status-modal-close-btn {
+      background: #475569;
+      color: #e2e8f0;
+    }
+
+    .status-modal-close-btn:hover {
+      background: #d1d5db;
+    }
+
+    html[data-theme="dark"] .status-modal-close-btn:hover {
+      background: #64748b;
+    }
+
+    /* Horizontal Transit Timeline */
+    .horizontal-transit {
+      margin: 30px 0;
+      padding: 30px;
+      background: white;
+      border: 2px solid #e5e7eb;
+      border-radius: 12px;
+    }
+
+    .transit-header {
+      font-size: 14px;
+      color: #6b7280;
+      text-transform: uppercase;
+      font-weight: 700;
+      margin-bottom: 20px;
+      letter-spacing: 0.3px;
+    }
+
+    .transit-progress-container {
+      position: relative;
+      padding: 40px 20px;
+      background: #f9fafb;
+      border-radius: 8px;
+      overflow: visible;
+    }
+
+    .transit-line {
+      position: absolute;
+      top: 50%;
+      left: 0;
+      right: 0;
+      height: 3px;
+      background: #e5e7eb;
+      transform: translateY(-50%);
+      z-index: 0;
+    }
+
+    .transit-line-progress {
+      position: absolute;
+      top: 50%;
+      left: 0;
+      height: 3px;
+      background: linear-gradient(90deg, #22c55e, #0078d7);
+      transform: translateY(-50%);
+      z-index: 1;
+      transition: width 0.8s ease;
+      border-radius: 2px;
+    }
+
+    .transit-points {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      position: relative;
+      z-index: 2;
+    }
+
+    .transit-point {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      flex: 1;
+      position: relative;
+    }
+
+    .transit-point-dot {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background: white;
+      border: 3px solid #e5e7eb;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 14px;
+      margin-bottom: 12px;
+      transition: all 0.3s ease;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    }
+
+    .transit-point.completed .transit-point-dot {
+      background: #22c55e;
+      border-color: #22c55e;
+      box-shadow: 0 3px 10px rgba(34, 197, 94, 0.3);
+    }
+
+    .transit-point.active .transit-point-dot {
+      background: #0078d7;
+      border-color: #0078d7;
+      box-shadow: 0 4px 16px rgba(0, 120, 215, 0.4);
+      width: 40px;
+      height: 40px;
+      font-size: 16px;
+      animation: pulse-dot 2s ease-in-out infinite;
+    }
+
+    @keyframes pulse-dot {
+      0%, 100% { 
+        transform: scale(1);
+        box-shadow: 0 4px 16px rgba(0, 120, 215, 0.4);
+      }
+      50% { 
+        transform: scale(1.15);
+        box-shadow: 0 6px 20px rgba(0, 120, 215, 0.6);
+      }
+    }
+
+    .transit-point.pending .transit-point-dot {
+      background: white;
+      border-color: #d1d5db;
+    }
+
+    .transit-point-label {
+      font-size: 12px;
+      font-weight: 600;
+      color: #374151;
+      text-align: center;
+      max-width: 90px;
+    }
+
+    .transit-point-info {
+      font-size: 10px;
+      color: #9ca3af;
+      margin-top: 4px;
+      text-align: center;
+      max-width: 90px;
+    }
+
+    .transit-animation-truck {
+      position: absolute;
+      top: 25%;
+      left: 0;
+      width: 20px;
+      height: 20px;
+      font-size: 18px;
+      animation: slide-truck 6s ease-in-out infinite;
+      z-index: 3;
+    }
+
+    @keyframes slide-truck {
+      0% { left: 0%; }
+      50% { left: 45%; }
+      100% { left: 100%; }
+    }
+
+    /* Progress Text */
+    .transit-progress-text {
+      text-align: center;
+      margin-top: 20px;
+      font-size: 13px;
+      color: #6b7280;
+    }
+
+    .transit-progress-bar {
+      width: 100%;
+      height: 4px;
+      background: #e5e7eb;
+      border-radius: 2px;
+      margin-top: 8px;
+      overflow: hidden;
+    }
+
+    .transit-progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, #22c55e, #0078d7);
+      border-radius: 2px;
+      animation: fill-progress 8s ease-out forwards;
+    }
+
+    @keyframes fill-progress {
+      0% { width: 0%; }
+      100% { width: 100%; }
+    }
+
+    .info-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 16px;
+      margin-bottom: 0;
+      background: transparent;
+      padding: 0;
+      border-radius: 0;
+      border: none;
+    }
+
+    .package-details-section h4 {
+      font-size: 14px;
+      font-weight: 700;
+      margin-bottom: 20px;
+      color: #9ca3af;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+    }
+
+    .info-item {
+      background: var(--card-light);
+      padding: 16px;
+      border-radius: 8px;
+      border: 1px solid var(--border-light);
+      transition: all 0.3s ease;
+      position: relative;
+      overflow: hidden;
+    }
+
+    html[data-theme="dark"] .info-item {
+      border-color: #475569;
+    }
+
+    .info-item:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+      border-color: #22c55e;
+      background: var(--card-light);
+    }
+
+    html[data-theme="dark"] .info-item:hover {
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    }
+
+    .info-item strong {
+      color: #9ca3af;
+      display: block;
+      margin-bottom: 8px;
+      font-weight: 700;
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .info-item span {
+      color: var(--text-light);
+      font-size: 14px;
+      font-weight: 600;
+      opacity: 1;
+      word-break: break-word;
+    }
+
+    .status-badge {
+      display: inline-block;
+      padding: 8px 16px;
+      border-radius: 24px;
+      font-size: 12px;
+      font-weight: 700;
+      margin-top: 8px;
+      animation: slideInRight 0.4s ease-out;
+      text-transform: uppercase;
+      letter-spacing: 0.4px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    }
+
+    .status-active {
+      background: linear-gradient(135deg, #dcfce7, #c6f6d5);
+      color: #065f46;
+      border: 1px solid #86efac;
+    }
+
+    .status-pending {
+      background: linear-gradient(135deg, #fef3c7, #fde68a);
+      color: #78350f;
+      border: 1px solid #fcd34d;
+    }
+
+    .status-delivered {
+      background: linear-gradient(135deg, #dbeafe, #bfdbfe);
+      color: #0c4a6e;
+      border: 1px solid #7dd3fc;
+    }
+
+    .status-failed {
+      background: linear-gradient(135deg, #fee2e2, #fecaca);
+      color: #7f1d1d;
+      border: 1px solid #fca5a5;
+    }
+
+    .timeline-container {
+      background: transparent;
+      border-radius: 0;
+      padding: 0;
+      margin-top: 30px;
+      border: none;
+      box-shadow: none;
+    }
+
+    .timeline-container h4 {
+      display: none;
+    }
+
+    .timeline {
+      position: relative;
+      padding: 0;
+    }
+
+    .timeline::before {
+      display: none;
+    }
+
+    .timeline-item {
+      position: relative;
+      margin-bottom: 0;
+      animation: none;
+    }
+
+    .timeline-item:nth-child(1) { animation-delay: 0s; }
+    .timeline-item:nth-child(2) { animation-delay: 0s; }
+    .timeline-item:nth-child(3) { animation-delay: 0s; }
+    .timeline-item:nth-child(4) { animation-delay: 0s; }
+    .timeline-item:nth-child(5) { animation-delay: 0s; }
+
+    .timeline-item::before {
+      display: none;
+    }
+
+    .timeline-item:hover::before {
+      display: none;
+    }
+
+    .timeline-item.completed::before {
+      display: none;
+    }
+
+    .timeline-content {
+      background: transparent;
+      padding: 0;
+      border-radius: 0;
+      border: none;
+      transition: none;
+      position: relative;
+    }
+
+    .timeline-item:hover .timeline-content {
+      border-color: transparent;
+      box-shadow: none;
+      transform: none;
+    }
+
+    .timeline-content strong {
+      color: var(--text-light);
+      display: block;
+      margin-bottom: 6px;
+      font-weight: 700;
+      font-size: 14px;
+    }
+
+    .timeline-content small {
+      color: #6b7280;
+      opacity: 1;
+      display: block;
+      margin-top: 4px;
+      font-size: 12px;
+      font-weight: 500;
+    }
+
+    .eta-section {
+      background: var(--card-light);
+      color: var(--text-light);
+      padding: 25px;
+      border-radius: 12px;
+      margin-top: 25px;
+      text-align: center;
+      animation: fadeInUp 0.6s ease-out;
+      box-shadow: none;
+      position: relative;
+      overflow: hidden;
+      border: 2px solid var(--border-light);
+    }
+
+    html[data-theme="dark"] .eta-section {
+      border-color: #475569;
+    }
+
+    .eta-section::before {
+      display: none;
+    }
+
+    .eta-section::after {
+      display: none;
+    }
+
+    .eta-label {
+      font-size: 13px;
+      opacity: 1;
+      margin-bottom: 10px;
+      font-weight: 700;
+      letter-spacing: 0.3px;
+      position: relative;
+      z-index: 1;
+      color: #6b7280;
+      text-transform: uppercase;
+    }
+
+    .eta-time {
+      font-size: 28px;
+      font-weight: 800;
+      font-variant-numeric: tabular-nums;
+      position: relative;
+      z-index: 1;
+      margin-bottom: 8px;
+      letter-spacing: -1px;
+      color: var(--primary-color);
+    }
+
+    .eta-distance {
+      font-size: 13px;
+      opacity: 0.8;
+      margin-top: 10px;
+      position: relative;
+      z-index: 1;
+      font-weight: 500;
+      color: #6b7280;
+    }
+
+    @keyframes float {
+      0%, 100% { transform: translateY(0px); }
+      50% { transform: translateY(20px); }
+    }
+
+    .recent-tracking {
+      margin-top: 20px;
+      padding: 15px;
+      background: var(--bg-light);
+      border-radius: 8px;
+    }
+
+    .recent-tracking h4 {
+      margin-bottom: 10px;
+      font-size: 14px;
+      color: var(--text-light);
+    }
+
+    .recent-list {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .recent-item {
+      padding: 6px 12px;
+      background: var(--card-light);
+      border: 1px solid var(--border-light);
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 13px;
+      transition: all 0.3s ease;
+    }
+
+    .recent-item:hover {
+      border-color: var(--primary-color);
+      color: var(--primary-color);
+    }
+
+    .message {
+      padding: 15px;
+      border-radius: 8px;
+      display: none;
+      margin-bottom: 15px;
+      animation: slideInDown 0.4s ease-out;
+    }
+
+    .message.show {
+      display: block;
+    }
+
+    .error-message {
+      color: #dc2626;
+      background: #fee2e2;
+      border: 1px solid #fca5a5;
+    }
+
+    .success-message {
+      color: #059669;
+      background: #d1fae5;
+      border: 1px solid #86efac;
+    }
+
+    .warning-message {
+      color: #92400e;
+      background: #fef3c7;
+      border: 1px solid #fcd34d;
+    }
+
+    .clear-btn {
+      background: linear-gradient(135deg, var(--error-color), #dc2626);
+      margin-top: 20px;
+      padding: 12px 28px;
+      font-weight: 700;
+      box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
+      letter-spacing: 0.3px;
+    }
+
+    .clear-btn:hover {
+      background: linear-gradient(135deg, #dc2626, #b91c1c);
+      box-shadow: 0 6px 20px rgba(239, 68, 68, 0.4);
+    }
+
+    @keyframes fadeInDown {
+      from {
+        opacity: 0;
+        transform: translateY(-20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    @keyframes fadeInUp {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    @keyframes fadeInLeft {
+      from {
+        opacity: 0;
+        transform: translateX(-20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateX(0);
+      }
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+      }
+      to {
+        opacity: 1;
+      }
+    }
+
+    @keyframes slideInDown {
+      from {
+        opacity: 0;
+        transform: translateY(-10px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    @keyframes slideInRight {
+      from {
+        opacity: 0;
+        transform: translateX(-10px);
+      }
+      to {
+        opacity: 1;
+        transform: translateX(0);
+      }
+    }
+
+    @keyframes pulse {
+      0%, 100% { box-shadow: 0 0 0 3px rgba(255, 107, 107, 0.5); }
+      50% { box-shadow: 0 0 0 8px rgba(255, 107, 107, 0.2); }
+    }
+
+    @keyframes shimmer {
+      0% { background-position: -1000px 0; }
+      100% { background-position: 1000px 0; }
+    }
+
+    @keyframes blink-icon {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.3; }
+    }
+
+    @keyframes slideUp {
+      from {
+        transform: translateY(20px);
+        opacity: 0;
+      }
+      to {
+        transform: translateY(0);
+        opacity: 1;
+      }
+    }
+
+    .animated-courier-icon {
+      animation: pulse 1.5s infinite;
+    }
+
+    .loading-shimmer {
+      background: linear-gradient(90deg, var(--border-light) 25%, var(--bg-light) 50%, var(--border-light) 75%);
+      background-size: 1000px 100%;
+      animation: shimmer 2s infinite;
+    }
+
+    .accessibility-focus:focus {
+      outline: 3px solid var(--primary-color);
+      outline-offset: 2px;
+    }
+
+    @media (max-width: 768px) {
+      .content {
+        padding: 15px;
+      }
+
+      .info-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .search-form {
+        flex-direction: column;
+      }
+
+      input[type="text"] {
+        min-width: 100%;
+      }
+
+      .tabs-container {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+      }
+
+      .eta-section {
+        margin: 0;
+        border-radius: 12px;
+      }
+
+      .order-info-header {
+        grid-template-columns: repeat(2, 1fr);
+      }
+
+      .timeline-step {
+        padding-left: 68px;
+        margin-bottom: 26px;
+      }
+
+      .timeline-steps::before {
+        left: 14px;
+        width: 12px;
+      }
+
+      .timeline-step-dot {
+        left: 4px;
+        width: 20px;
+        height: 20px;
+        font-size: 10px;
+        top: 0;
+      }
+
+      .timeline-step.current .timeline-step-dot {
+        width: 28px;
+        height: 28px;
+        font-size: 12px;
+        left: 0px;
+        top: -4px;
+      }
+
+      .timeline-step-label {
+        font-size: 12px;
+      }
+
+      .timeline-step-location {
+        font-size: 11px;
+      }
+
+      .timeline-step-date {
+        font-size: 10px;
+      }
+
+      .delivery-progress {
+        padding: 24px 20px;
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      * {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+      }
+    }
+
+    @supports (backdrop-filter: blur(10px)) {
+      .container {
+        backdrop-filter: blur(10px);
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>🚚 Live Courier Tracking</h1>
+      <p>Real-time package delivery tracking with animated courier movement</p>
+    </div>
+
+    <div class="content">
+      <div class="search-section">
+        <div class="error-message message" id="errorMessage" role="alert" aria-live="assertive"></div>
+        <div class="success-message message" id="successMessage" role="alert" aria-live="polite"></div>
+        <div class="warning-message message" id="warningMessage" role="alert" aria-live="polite"></div>
+        <form id="courierTrackingForm" class="search-form">
+          <input 
+            type="text" 
+            id="courierTrackingId" 
+            placeholder="Enter Tracking ID (e.g., SWIFT-1234567890-ABCDE)" 
+            class="accessibility-focus"
+            aria-label="Tracking ID input"
+            required 
+          />
+          <button type="submit" class="accessibility-focus" aria-label="Track courier">Track Courier</button>
+        </form>
+        <div class="recent-tracking" id="recentTracking" style="display: none;">
+          <h4>📋 Recent Tracking IDs</h4>
+          <div class="recent-list" id="recentList"></div>
+        </div>
+      </div>
+
+      <div id="courierMap" role="region" aria-label="Courier tracking map"></div>
+
+      <div class="tabs-container" id="tabsContainer" style="display: none;" role="tablist">
+        <button class="tab-btn active" data-tab="0" role="tab" aria-selected="true" aria-controls="trackingInfo-0">
+          📦 Tracking #<span id="tabLabel0"></span> <span class="close-icon" data-action="close" data-tab="0">✕</span>
+        </button>
+      </div>
+
+      <div class="info-section active" id="courierInfo-0" role="tabpanel" aria-labelledby="tab-0">
+        <div class="info-card">
+          <!-- Order Info Header -->
+          <div class="order-info-header" id="orderInfoHeader0">
+            <div class="order-info-box">
+              <div class="order-info-label">Order Placed</div>
+              <div class="order-info-value" id="infoOrderDate0">-</div>
+            </div>
+            <div class="order-info-box">
+              <div class="order-info-label">Total</div>
+              <div class="order-info-value" id="infoOrderTotal0">-</div>
+            </div>
+            <div class="order-info-box">
+              <div class="order-info-label">Ship To</div>
+              <div class="order-info-value" id="infoShipTo0">-</div>
+            </div>
+            <div class="order-info-box">
+              <div class="order-info-label">Order</div>
+              <div class="order-info-value" id="infoOrderNumber0">-</div>
+            </div>
+          </div>
+
+          <!-- Order Status Section -->
+          <div class="order-status-section" id="orderStatusSection0">
+            <div class="order-status-header">
+              <div class="order-status-label">Order Status</div>
+              <div class="order-status-title" id="infoStatus0">-</div>
+              <div id="statusBadge0"></div>
+              <div class="order-status-info" id="infoStatusDate0">-</div>
+            </div>
+          </div>
+
+          <!-- Vertical Delivery Progress Timeline -->
+          <div class="delivery-progress">
+            <span class="timeline-label">Delivery Progress</span>
+            <div class="timeline-steps" id="timelineSteps0">
+              <!-- Will be populated by JavaScript -->
+            </div>
+          </div>
+
+          <!-- Status Detail Modal -->
+          <div class="status-modal" id="statusModal0">
+            <div class="status-modal-content">
+              <div class="status-modal-header">
+                <div class="status-modal-title" id="modalStatusTitle0">-</div>
+              </div>
+              <div class="status-modal-details">
+                <div class="status-modal-detail-item">
+                  <div class="status-modal-detail-label">Location</div>
+                  <div class="status-modal-detail-value" id="modalStatusLocation0">-</div>
+                </div>
+                <div class="status-modal-detail-item">
+                  <div class="status-modal-detail-label">Time</div>
+                  <div class="status-modal-detail-value" id="modalStatusTime0">-</div>
+                </div>
+              </div>
+              <div class="status-modal-close">
+                <button class="status-modal-close-btn" onclick="closeStatusModal(0)">Close</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Detailed Package Information -->
+          <div class="package-details-section">
+            <h4 style="font-size: 12px; font-weight: 700; margin-bottom: 20px; color: #9ca3af; letter-spacing: 0.5px; text-transform: uppercase;">📦 Package Details</h4>
+            <div class="info-grid">
+              <div class="info-item">
+                <strong>Tracking ID</strong>
+                <span id="infoTrackingId0">-</span>
+              </div>
+              <div class="info-item">
+                <strong>Recipient</strong>
+                <span id="infoRecipient0">-</span>
+              </div>
+              <div class="info-item">
+                <strong>Email</strong>
+                <span id="infoEmail0">-</span>
+              </div>
+              <div class="info-item">
+                <strong>Location</strong>
+                <span id="infoLocation0">-</span>
+              </div>
+              <div class="info-item">
+                <strong>Last Updated</strong>
+                <span id="infoUpdated0">-</span>
+              </div>
+              <div class="info-item">
+                <strong>Distance</strong>
+                <span id="infoDistance0">-</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Delivery Timeline Details -->
+          <div class="timeline-container" id="timelineContainer0" style="display: none;">
+            <h4 style="margin-bottom: 15px; font-weight: 700;">📍 Full Delivery Timeline</h4>
+            <div class="timeline" id="timeline0" role="region" aria-label="Delivery timeline"></div>
+          </div>
+
+          <!-- Estimated Delivery -->
+          <div class="eta-section" id="etaSection0" style="display: none;">
+            <div class="eta-label">📍 Estimated Delivery</div>
+            <div class="eta-time" id="etaTime0">--:--</div>
+            <div class="eta-distance" id="etaDistance0">Distance remaining: -- km</div>
+          </div>
+
+          <button class="clear-btn" onclick="clearTracking(0)" class="accessibility-focus" aria-label="Clear tracking data">Clear Search</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.min.js"></script>
+  <script>
+    const API_BASE_URL = 'http://localhost:5000';
+    let courierMap = null;
+    let courierMarkers = new Map();
+    let animatedMarkers = new Map();
+    let courierAnimationIntervals = new Map();
+    let trackingData = new Map();
+    let autoRefreshIntervals = new Map();
+    let activeTab = 0;
+    let wsConnection = null;
+
+    function getThemeContext() {
+      return {
+        theme: document.documentElement.getAttribute('data-theme') || 'light',
+        isDarkMode: document.documentElement.getAttribute('data-theme') === 'dark'
+      };
+    }
+
+    function syncTheme() {
+      const themeEl = document.documentElement;
+      if (window.ThemeContext) {
+        themeEl.setAttribute('data-theme', window.ThemeContext.currentTheme);
+      }
+    }
+
+    window.addEventListener('themeChanged', syncTheme);
+    syncTheme();
+
+    function initCourierMap() {
+      if (courierMap) return;
+      
+      courierMap = L.map('courierMap').setView([6.5244, 3.3792], 11);
+      
+      const lightTile = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '© OpenStreetMap contributors',
+        maxZoom: 19,
+        name: 'Street Map'
+      });
+      
+      const darkTile = L.tileLayer('https://cartodb-basemaps-{s}.global.ssl.fastly.net/dark_all/{z}/{x}/{y}.png', {
+        attribution: '© CartoDB',
+        maxZoom: 19,
+        name: 'Dark Map'
+      });
+      
+      const satellite = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
+        attribution: '© Esri',
+        maxZoom: 18,
+        name: 'Satellite'
+      });
+      
+      const initialTile = getThemeContext().isDarkMode ? darkTile : lightTile;
+      initialTile.addTo(courierMap);
+      L.control.layers({ 'Street Map': lightTile, 'Dark Map': darkTile, 'Satellite': satellite }).addTo(courierMap);
+
+      window.addEventListener('themeChanged', () => {
+        const currentLayers = courierMap._layers;
+        const isDark = getThemeContext().isDarkMode;
+        Object.values(currentLayers).forEach(layer => {
+          if (layer.setUrl) {
+            if (isDark && layer._url && layer._url.includes('openstreetmap')) {
+              darkTile.addTo(courierMap);
+              courierMap.removeLayer(layer);
+            } else if (!isDark && layer._url && layer._url.includes('cartodb')) {
+              lightTile.addTo(courierMap);
+              courierMap.removeLayer(layer);
+            }
+          }
+        });
+      });
+    }
+
+    function getMarkerIcon(status) {
+      const colorMap = {
+        'Pending Pickup': '#f59e0b',
+        'Pickup Assigned': '#3b82f6',
+        'Pickup Accepted': '#10b981',
+        'Enroute to Facility': '#8b5cf6',
+        'Arrived at Hub or Facility': '#6366f1',
+        'In Transit': '#06b6d4',
+        'Out for Delivery': '#f97316',
+        'Delivered': '#22c55e',
+        'Awaiting Receipt': '#14b8a6',
+        'Delivery Failed': '#ef4444',
+        'Returned to Sender': '#64748b'
+      };
+      const color = colorMap[status] || '#9ca3af';
+      
+      return L.divIcon({
+        html: `<div style="background-color: ${color}; width: 30px; height: 30px; border-radius: 50%; border: 3px solid white; box-shadow: 0 2px 4px rgba(0,0,0,0.2); display: flex; align-items: center; justify-content: center; font-size: 16px;">📦</div>`,
+        iconSize: [36, 36]
+      });
+    }
+
+    function getCourierIcon() {
+      return L.divIcon({
+        html: `<div style="background-color: #ff6b6b; width: 28px; height: 28px; border-radius: 50%; border: 2px solid white; box-shadow: 0 0 0 3px #ff6b6b, 0 2px 6px rgba(0,0,0,0.3); display: flex; align-items: center; justify-content: center; font-size: 14px;">🚚</div>`,
+        iconSize: [32, 32],
+        className: 'animated-courier-icon'
+      });
+    }
+
+    function animateCourierMovement(trackingId, location) {
+      const existingInterval = courierAnimationIntervals.get(trackingId);
+      if (existingInterval) clearInterval(existingInterval);
+      
+      const existingMarker = animatedMarkers.get(trackingId);
+      if (existingMarker) courierMap.removeLayer(existingMarker);
+      
+      const startLat = location.lat;
+      const startLng = location.lng;
+      
+      // Define destination point (offset for realistic movement)
+      const destLat = startLat + 0.02;
+      const destLng = startLng + 0.02;
+      
+      const duration = 10000; // 10 seconds for each direction
+      const startTime = Date.now();
+      let isBlinking = false;
+      
+      const animatedMarker = L.marker([startLat, startLng], { 
+        icon: getCourierIcon(), 
+        zIndexOffset: 1000 
+      }).addTo(courierMap);
+      
+      animatedMarker.bindPopup(`<div style="font-size: 12px; text-align: center;"><strong>🚚 Courier En Route</strong><br/><span style="color: #ff6b6b;">Moving to delivery location</span><br/><small>${trackingId}</small></div>`);
+      
+      animatedMarkers.set(trackingId, animatedMarker);
+      
+      const interval = setInterval(() => {
+        const elapsed = Date.now() - startTime;
+        const cycleTime = elapsed % (duration * 2); // Full cycle is 2x duration
+        let progress;
+        
+        if (cycleTime < duration) {
+          // Going from start to destination
+          progress = cycleTime / duration;
+        } else {
+          // Coming back from destination to start
+          progress = 1 - ((cycleTime - duration) / duration);
+        }
+        
+        // Linear interpolation for smooth straight-line movement
+        const newLat = startLat + (destLat - startLat) * progress;
+        const newLng = startLng + (destLng - startLng) * progress;
+        
+        animatedMarker.setLatLng([newLat, newLng]);
+        
+        // Toggle blinking effect
+        const markerElement = animatedMarker.getElement();
+        if (markerElement) {
+          isBlinking = !isBlinking;
+          markerElement.style.opacity = isBlinking ? '0.4' : '1';
+          markerElement.style.transition = 'opacity 0.3s ease-in-out';
+        }
+      }, 300);
+      
+      courierAnimationIntervals.set(trackingId, interval);
+    }
+
+    function showMessage(type, message) {
+      const errorEl = document.getElementById('errorMessage');
+      const successEl = document.getElementById('successMessage');
+      const warningEl = document.getElementById('warningMessage');
+      
+      errorEl.classList.remove('show');
+      successEl.classList.remove('show');
+      warningEl.classList.remove('show');
+      
+      if (type === 'error') {
+        errorEl.textContent = message;
+        errorEl.classList.add('show');
+      } else if (type === 'success') {
+        successEl.textContent = message;
+        successEl.classList.add('show');
+      } else if (type === 'warning') {
+        warningEl.textContent = message;
+        warningEl.classList.add('show');
+      }
+      
+      setTimeout(() => {
+        document.getElementById(`${type}Message`).classList.remove('show');
+      }, 5000);
+    }
+
+    function saveRecentTracking(trackingId) {
+      try {
+        let recent = JSON.parse(localStorage.getItem('sd-recent-tracking') || '[]');
+        recent = recent.filter(id => id !== trackingId);
+        recent.unshift(trackingId);
+        recent = recent.slice(0, 5);
+        localStorage.setItem('sd-recent-tracking', JSON.stringify(recent));
+        loadRecentTracking();
+      } catch (e) {
+        console.warn('Could not save recent tracking', e);
+      }
+    }
+
+    function loadRecentTracking() {
+      try {
+        const recent = JSON.parse(localStorage.getItem('sd-recent-tracking') || '[]');
+        const recentList = document.getElementById('recentList');
+        const recentContainer = document.getElementById('recentTracking');
+        
+        if (recent.length > 0) {
+          recentList.innerHTML = recent.map(id => 
+            `<span class="recent-item" onclick="quickTrack('${id}')" role="button" tabindex="0">${id.substring(0, 12)}...</span>`
+          ).join('');
+          recentContainer.style.display = 'block';
+        }
+      } catch (e) {}
+    }
+
+    function quickTrack(trackingId) {
+      document.getElementById('courierTrackingId').value = trackingId;
+      document.getElementById('courierTrackingForm').dispatchEvent(new Event('submit'));
+    }
+
+    function buildTimeline(data) {
+      const stepsContainer = document.getElementById(`timelineSteps${activeTab}`);
+      if (!stepsContainer || !data.timeline) return;
+      
+      stepsContainer.innerHTML = data.timeline.map((item, index) => {
+        const isLast = index === data.timeline.length - 1;
+        const isCompleted = item.completed || index < data.timeline.findIndex(t => !t.completed);
+        const isCurrent = item.completed && isLast;
+        
+        let emoji = '📍';
+        if (isCurrent && data.status === 'Delivered') {
+          emoji = '✓';
+        } else if (isCurrent) {
+          emoji = '●';
+        }
+        
+        return `
+          <div class="timeline-step ${isCompleted ? 'completed' : ''} ${isCurrent ? 'current' : ''}">
+            <div class="timeline-step-dot">${emoji}</div>
+            <div class="timeline-step-content">
+              <div class="timeline-step-label">${item.status || 'Status'}</div>
+              ${item.location ? `<div class="timeline-step-location">${item.location}</div>` : ''}
+              <div class="timeline-step-date">${new Date(item.timestamp).toLocaleString()}</div>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function calculateETA(data) {
+      const etaSection = document.getElementById(`etaSection${activeTab}`);
+      if (!etaSection || !data.eta) return;
+      
+      const etaTime = new Date(data.eta);
+      const now = new Date();
+      const diff = etaTime - now;
+      
+      if (diff < 0) {
+        document.getElementById(`etaTime${activeTab}`).textContent = 'Delivered';
+      } else {
+        const hours = Math.floor(diff / 3600000);
+        const minutes = Math.floor((diff % 3600000) / 60000);
+        document.getElementById(`etaTime${activeTab}`).textContent = `${hours}h ${minutes}m`;
+      }
+      
+      const distance = data.distance_remaining || 0;
+      document.getElementById(`etaDistance${activeTab}`).textContent = `Distance remaining: ${distance} km`;
+      etaSection.style.display = 'block';
+    }
+
+    function displayTrackingInfo(data, tabIndex) {
+      // Basic tracking information
+      document.getElementById(`infoTrackingId${tabIndex}`).textContent = data.trackingId;
+      document.getElementById(`infoStatus${tabIndex}`).textContent = data.status;
+      document.getElementById(`infoRecipient${tabIndex}`).textContent = data.user.fullName;
+      document.getElementById(`infoEmail${tabIndex}`).textContent = data.user.email;
+      document.getElementById(`infoLocation${tabIndex}`).textContent = `${data.location.lat.toFixed(4)}, ${data.location.lng.toFixed(4)}`;
+      document.getElementById(`infoUpdated${tabIndex}`).textContent = new Date(data.updatedAt).toLocaleString();
+      document.getElementById(`infoDistance${tabIndex}`).textContent = data.distance_remaining ? `${data.distance_remaining} km` : '-';
+      
+      // Order header information
+      document.getElementById(`infoOrderDate${tabIndex}`).textContent = new Date(data.createdAt).toLocaleDateString();
+      document.getElementById(`infoOrderTotal${tabIndex}`).textContent = data.totalAmount ? `$${data.totalAmount.toFixed(2)}` : '-';
+      document.getElementById(`infoShipTo${tabIndex}`).textContent = data.user.fullName;
+      document.getElementById(`infoOrderNumber${tabIndex}`).textContent = data.trackingId;
+      
+      // Order status date
+      document.getElementById(`infoStatusDate${tabIndex}`).textContent = new Date(data.updatedAt).toLocaleDateString();
+      
+      const activeStatuses = ['Out for Delivery', 'In Transit', 'Enroute to Facility'];
+      
+      if (activeStatuses.includes(data.status)) {
+        document.getElementById(`statusBadge${tabIndex}`).innerHTML = '<span class="status-badge status-active">🚚 Active Delivery</span>';
+        setTimeout(() => animateCourierMovement(data.trackingId, data.location), 500);
+      } else if (data.status === 'Delivered') {
+        document.getElementById(`statusBadge${tabIndex}`).innerHTML = '<span class="status-badge" style="background: #d1d5db; color: #374151;">✓ Delivered</span>';
+      } else {
+        document.getElementById(`statusBadge${tabIndex}`).innerHTML = '';
+      }
+      
+      // Build vertical timeline - show only up to current status
+      buildTimelineFromStatus(data, tabIndex);
+      
+      if (data.eta) {
+        calculateETA(data);
+      }
+      
+      document.getElementById(`courierInfo-${tabIndex}`).classList.add('active');
+    }
+
+    function buildTimelineFromStatus(data, tabIndex) {
+      const statusOrder = [
+        'Pending Pickup',
+        'Pickup Assigned',
+        'Pickup Accepted',
+        'Enroute to Facility',
+        'Arrived at Hub or Facility',
+        'In Transit',
+        'Out for Delivery',
+        'Delivered',
+        'Awaiting Receipt',
+        'Delivery Failed',
+        'Returned to Sender'
+      ];
+
+      const currentIndex = statusOrder.indexOf(data.status);
+      const stepsContainer = document.getElementById(`timelineSteps${tabIndex}`);
+      
+      if (!stepsContainer) return;
+
+      // Only show statuses up to and including current status
+      const displayStatuses = statusOrder.slice(0, currentIndex + 1);
+
+      stepsContainer.innerHTML = displayStatuses.map((status, index) => {
+        const isCurrent = index === displayStatuses.length - 1;
+        const isCompleted = index < displayStatuses.length - 1;
+        const isDelivered = status === 'Delivered';
+        
+        let emoji = '●';
+        if (isCompleted) {
+          emoji = '✓';
+        } else if (isCurrent && isDelivered) {
+          emoji = '✓';
+        }
+        
+        const stepClass = isCurrent ? 'current' : 'completed';
+        
+        return `
+          <div class="timeline-step ${stepClass}" data-status="${status}" onclick="openStatusModal(${tabIndex}, '${status}', '${data.location.lat.toFixed(4)}, ${data.location.lng.toFixed(4)}', '${new Date(data.updatedAt).toLocaleString()}')">
+            <div class="timeline-step-dot">${emoji}</div>
+            <div class="timeline-step-content">
+              <div class="timeline-step-label">${status}</div>
+              <div class="timeline-step-location">${data.location ? `${data.location.lat.toFixed(4)}, ${data.location.lng.toFixed(4)}` : 'Location pending'}</div>
+              <div class="timeline-step-date">${new Date(data.updatedAt).toLocaleString()}</div>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function openStatusModal(tabIndex, status, location, time) {
+      document.getElementById(`modalStatusTitle${tabIndex}`).textContent = status;
+      document.getElementById(`modalStatusLocation${tabIndex}`).textContent = location;
+      document.getElementById(`modalStatusTime${tabIndex}`).textContent = time;
+      document.getElementById(`statusModal${tabIndex}`).classList.add('active');
+    }
+
+    function closeStatusModal(tabIndex) {
+      document.getElementById(`statusModal${tabIndex}`).classList.remove('active');
+    }
+
+    function setupAutoRefresh(trackingId, tabIndex) {
+      if (autoRefreshIntervals.has(trackingId)) {
+        clearInterval(autoRefreshIntervals.get(trackingId));
+      }
+      
+      const interval = setInterval(async () => {
+        try {
+          const response = await fetch(`${API_BASE_URL}/api/tracking/${trackingId}`);
+          if (response.ok) {
+            const data = await response.json();
+            trackingData.set(trackingId, data);
+            displayTrackingInfo(data, tabIndex);
+            
+            if (data.status === 'Delivered') {
+              clearInterval(interval);
+              autoRefreshIntervals.delete(trackingId);
+              showMessage('success', `✓ ${trackingId} has been delivered!`);
+              playNotificationSound();
+            }
+          }
+        } catch (e) {
+          console.warn('Auto-refresh failed for ' + trackingId, e);
+        }
+      }, 30000);
+      
+      autoRefreshIntervals.set(trackingId, interval);
+    }
+
+    function playNotificationSound() {
+      const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+      const oscillator = audioContext.createOscillator();
+      const gainNode = audioContext.createGain();
+      
+      oscillator.connect(gainNode);
+      gainNode.connect(audioContext.destination);
+      
+      oscillator.frequency.value = 800;
+      oscillator.type = 'sine';
+      
+      gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
+      gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.5);
+      
+      oscillator.start(audioContext.currentTime);
+      oscillator.stop(audioContext.currentTime + 0.5);
+    }
+
+    function integrateNLU(trackingData) {
+      if (window.NLUActionHandler) {
+        window.NLUActionHandler.executeAction('track-shipment', {
+          trackingId: trackingData.trackingId,
+          status: trackingData.status,
+          location: trackingData.location
+        });
+      }
+    }
+
+    document.getElementById('courierTrackingForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      
+      const trackingId = document.getElementById('courierTrackingId').value.trim().toUpperCase();
+      if (!trackingId) return;
+      
+      try {
+        initCourierMap();
+        
+        const response = await fetch(`${API_BASE_URL}/api/tracking/${trackingId}`);
+        if (!response.ok) {
+          throw new Error('Tracking ID not found. Please verify and try again.');
+        }
+        
+        const data = await response.json();
+        trackingData.set(trackingId, data);
+        
+        const location = [data.location.lat, data.location.lng];
+        if (courierMarkers.has(trackingId)) {
+          courierMap.removeLayer(courierMarkers.get(trackingId));
+        }
+        
+        const marker = L.marker(location, { icon: getMarkerIcon(data.status) }).addTo(courierMap);
+        marker.bindPopup(`<strong>${data.user.fullName}</strong><br/>Status: ${data.status}<br/>Tracking: ${data.trackingId}`).openPopup();
+        courierMarkers.set(trackingId, marker);
+        
+        courierMap.setView(location, 14);
+        
+        displayTrackingInfo(data, activeTab);
+        setupAutoRefresh(trackingId, activeTab);
+        saveRecentTracking(trackingId);
+        
+        document.getElementById('courierTrackingId').value = '';
+        showMessage('success', '✓ Tracking information loaded!');
+        
+        integrateNLU(data);
+      } catch (err) {
+        showMessage('error', '❌ ' + err.message);
+        document.getElementById(`courierInfo-${activeTab}`).classList.remove('active');
+      }
+    });
+
+    function clearTracking(tabIndex) {
+      document.getElementById('courierTrackingId').value = '';
+      document.getElementById(`courierInfo-${tabIndex}`).classList.remove('active');
+      
+      const markers = Array.from(courierMarkers.values());
+      markers.forEach(marker => courierMap.removeLayer(marker));
+      
+      const animatedMarkersList = Array.from(animatedMarkers.values());
+      animatedMarkersList.forEach(marker => courierMap.removeLayer(marker));
+      
+      courierMarkers.clear();
+      animatedMarkers.clear();
+      courierAnimationIntervals.forEach(interval => clearInterval(interval));
+      courierAnimationIntervals.clear();
+      autoRefreshIntervals.forEach(interval => clearInterval(interval));
+      autoRefreshIntervals.clear();
+      trackingData.clear();
+      
+      courierMap.setView([6.5244, 3.3792], 11);
+      
+      document.getElementById('errorMessage').classList.remove('show');
+      document.getElementById('successMessage').classList.remove('show');
+    }
+
+    function autoTrackFromQuery() {
+      const urlParams = new URLSearchParams(window.location.search);
+      const trackingId = urlParams.get('id');
+      
+      if (trackingId) {
+        console.log('🔍 Auto-tracking from query param:', trackingId);
+        document.getElementById('courierTrackingId').value = trackingId;
+        
+        setTimeout(() => {
+          const form = document.getElementById('courierTrackingForm');
+          if (form) {
+            console.log('📝 Submitting form with tracking ID:', trackingId);
+            form.dispatchEvent(new Event('submit', { bubbles: true }));
+          }
+        }, 500);
+      }
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      loadRecentTracking();
+      initCourierMap();
+      
+      if (window.AOS) {
+        AOS.init({
+          duration: 400,
+          easing: 'ease-in-out-quad',
+          delay: 0,
+          disable: 'mobile'
+        });
+      }
+
+      autoTrackFromQuery();
+
+      document.addEventListener('keydown', (e) => {
+        if (e.key === 'ArrowLeft' && courierMap) {
+          courierMap.panBy([-50, 0]);
+        } else if (e.key === 'ArrowRight' && courierMap) {
+          courierMap.panBy([50, 0]);
+        } else if (e.key === 'ArrowUp' && courierMap) {
+          courierMap.panBy([0, -50]);
+        } else if (e.key === 'ArrowDown' && courierMap) {
+          courierMap.panBy([0, 50]);
+        }
+      });
+
+      if ('ontouchstart' in window) {
+        let startX = 0;
+        document.getElementById('courierMap').addEventListener('touchstart', (e) => {
+          startX = e.touches[0].clientX;
+        });
+        
+        document.getElementById('courierMap').addEventListener('touchend', (e) => {
+          const endX = e.changedTouches[0].clientX;
+          const diff = startX - endX;
+          if (Math.abs(diff) > 50 && courierMap) {
+            if (diff > 0) {
+              courierMap.panBy([100, 0]);
+            } else {
+              courierMap.panBy([-100, 0]);
+            }
+          }
+        });
+      }
+    });
+  </script>
+</body>
+</html>

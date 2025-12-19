@@ -1,0 +1,7 @@
+{
+  "routes": [
+    { "src": "/style.css", "dest": "/style.css" },
+    { "src": "/script.js", "dest": "/script.js" },
+    { "src": "/.*", "dest": "/index.html" }
+  ]
+}

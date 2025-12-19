@@ -1,54 +1,111 @@
 <!DOCTYPE html>
 <html lang="en" data-theme="light">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>SwiftDelivery | Airfreight Logistics</title>
-  <link rel="stylesheet" href="styles.css" />
-  <!-- AOS styles in the head so they load before animations are triggered -->
-  <link href="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.css" rel="stylesheet">
-</head>
-<body>
-  <!-- Header with Blur Effect -->
-  <header class="header blur-header">
-    <div class="logo">✈️ SwiftDelivery</div>
-    <nav class="top-nav">
-      <ul>
-        <li><a href="#home" data-i18n="home">Home</a></li>
-        <li><a href="#gallery" data-i18n="gallery">Gallery</a></li>
-        <li><a href="#services" data-i18n="services">Services</a></li>
-        <li><a href="#track" data-i18n="track">Track</a></li>
-        <li><a href="#login" data-i18n="login">Login</a></li>
-        <li><a href="#register" data-i18n="register">Register</a></li>
-        <li>
-          <select id="languageSelect">
-            <option value="en">English</option>
-            <option value="fr">Français</option>
-            <option value="es">Español</option>
-            <option value="de">Deutsch</option>
-            <option value="zh">中文</option>
-            <option value="ar">العربية</option>
-          </select>
-        </li>
-      </ul>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>SwiftDelivery | Airfreight Logistics</title>
+    
+    <!-- Preload Critical Resources -->
+    <link rel="preload" href="style.css" as="style" />
+    <link rel="preload" href="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.css" as="style" />
+    <link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css" as="style" />
+    
+    <!-- Stylesheets with async loading -->
+    <link rel="stylesheet" href="style.css" />
+    <link href="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.css" rel="stylesheet" media="print" onload="this.media='all'" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css" media="print" onload="this.media='all'" />
+    
+    <!-- DNS Prefetch for External Resources -->
+    <link rel="dns-prefetch" href="//cdn.jsdelivr.net" />
+    <link rel="dns-prefetch" href="//cdnjs.cloudflare.com" />
+    <link rel="dns-prefetch" href="//randomuser.me" />
+    
+    <!-- Critical CSS Inline -->
+    <style>
+      /* Critical above-the-fold styles */
+      .header{position:fixed;top:0;width:100%;backdrop-filter:blur(20px) saturate(180%);background:rgba(255,255,255,.7);border-bottom:1px solid rgba(255,255,255,.2);display:flex;justify-content:space-between;align-items:center;padding:1rem 2rem;z-index:2000;transition:all .3s ease;box-shadow:0 8px 32px rgba(31,38,135,.15)}
+      .hero{height:100vh;display:flex;align-items:center;justify-content:center;background:linear-gradient(to right,var(--primary-color),var(--accent-color));color:#fff;text-align:center;padding-top:2rem;position:relative;overflow:hidden}
+      .hero-content{z-index:2;position:relative}
+      .video-background{position:absolute;top:0;left:0;width:100%;height:100%;overflow:hidden;z-index:-1}
+      .video-background video{position:absolute;top:50%;left:50%;min-width:100%;min-height:100%;width:auto;height:auto;transform:translate(-50%,-50%);object-fit:cover}
+      .video-overlay{position:absolute;top:0;left:0;width:100%;height:100%;background:linear-gradient(135deg,rgba(15,23,42,.85),rgba(30,41,59,.75),rgba(79,70,229,.65));z-index:1}
+      /* Default: hide strong dark overlay in light mode */
+      .video-overlay-dark{position:absolute;top:0;left:0;width:100%;height:100%;background:transparent;opacity:0;pointer-events:none;transition:opacity .25s ease;z-index:2}
+      /* Night-mode: very obvious purple/magenta overlay with slight dark contrast */
+      [data-theme="dark"] .video-overlay-dark{
+        background: radial-gradient(circle at center,
+          rgba(202,72,255,0.84) 0%,
+          rgba(168,85,247,0.78) 30%,
+          rgba(147,51,234,0.72) 60%,
+          rgba(10,6,20,0.78) 100%
+        );
+        mix-blend-mode:multiply;
+        /* slight reduction so video details remain visible but with contrast */
+        opacity:0.88;
+        pointer-events:none;
+        box-shadow: inset 0 0 120px rgba(147,51,234,0.45);
+      }
+      /* Add modest darkness to highlight video details while keeping purple tint */
+      [data-theme="dark"] .video-background video{
+        filter:brightness(0.90) contrast(1.35) saturate(2.2) hue-rotate(3deg);
+        transition:filter .2s ease;
+      }
+    </style>
+  </head>
+  <body>
+  <!-- Skip Navigation Link -->
+  <a href="#main-content" class="skip-link">Skip to main content</a>
+  
+  <header class="main-header" role="banner">
+     <div class="header-left">
+       <a href="#home"><strong class="site-title">✈️ SwiftDelivery</strong></a>
+     </div>
+
+    <!-- Top navigation with auto-scroll to sections -->
+    <nav class="top-nav" role="navigation" aria-label="Main navigation">
+      <a href="#home" data-i18n="home" aria-label="Go to home page">Home</a>
+      <a href="#gallery" data-i18n="gallery" aria-label="View gallery">Gallery</a>
+      <a href="#services" data-i18n="services" aria-label="View our services">Services</a>
+      <a href="#track" data-i18n="track" aria-label="Track your shipment">Track</a>
+      <a href="#contact" data-i18n="contact" aria-label="Contact us">Contact</a>
+      <a href="#livechat" data-i18n="liveChatTitle" aria-label="Access live chat">Live Chat</a>
+      <a href="#faq" data-i18n="faq" aria-label="View frequently asked questions">FAQ</a>
+      <a href="#" data-i18n="login" aria-label="Login to your account">Login</a>
+      <a href="#" data-i18n="register" aria-label="Create a new account">Register</a>
     </nav>
-    <div class="theme-switcher">
-      <label for="themeToggle">🌙</label>
-      <input type="checkbox" id="themeToggle" />
+
+    <!-- Scroll Progress Indicator -->
+    <div class="scroll-progress" id="scrollProgress">
+      <div class="progress-fill"></div>
     </div>
-    <button id="menuToggle">☰</button>
+
+    <div class="header-right">
+      <!-- Day/Night toggle -->
+      <label class="theme-toggle" title="Toggle dark/light mode">
+        <input type="checkbox" id="themeToggle" aria-label="Toggle dark mode" />
+        <span class="sun-icon">☀️</span>
+        <span class="slider"></span>
+        <span class="moon-icon">🌙</span>
+      </label>
+
+      <!-- Menu button for sidebar (mobile) -->
+      <button id="menuToggle" aria-label="Toggle menu">☰</button>
+    </div>
   </header>
 
-  <!-- Animated Sidebar -->
-  <aside id="sideMenu" class="animated-sidebar">
-    <button id="closeMenu">✖</button>
+  <!-- Sidebar (kept mainly for mobile) -->
+  <aside id="sideMenu" class="animated-sidebar right-sidebar">
+    <button id="closeMenu" aria-label="Close menu">✖</button>
     <ul>
       <li><a href="#home" data-i18n="home">Home</a></li>
       <li><a href="#gallery" data-i18n="gallery">Gallery</a></li>
       <li><a href="#services" data-i18n="services">Services</a></li>
       <li><a href="#track" data-i18n="track">Track</a></li>
-      <li><a href="#login" data-i18n="login">Login</a></li>
-      <li><a href="#register" data-i18n="register">Register</a></li>
+      <li><a href="#contact" data-i18n="contact">Contact</a></li>
+      <li><a href="#faq" data-i18n="faq">FAQ</a></li>
+      <li><a href="#livechat" data-i18n="liveChatTitle">Live Chat</a></li>
+      <li><a href="#" data-i18n="login">Login</a></li>
+      <li><a href="#" data-i18n="register">Register</a></li>
       <li>
         <select id="sidebarLanguageSelect">
           <option value="en">English</option>
@@ -57,224 +114,1108 @@
           <option value="de">Deutsch</option>
           <option value="zh">中文</option>
           <option value="ar">العربية</option>
+          <option value="hi">हिन्दी</option>
+          <option value="pt">Português</option>
+          <option value="ru">Русский</option>
+          <option value="ja">日本語</option>
+          <option value="it">Italiano</option>
+          <option value="pl">Polski</option>
+          <option value="ko">한국어</option>
+          <option value="vi">Tiếng Việt</option>
+          <option value="th">ไทย</option>
+          <option value="tr">Türkçe</option>
+          <option value="id">Bahasa Indonesia</option>
+          <option value="nl">Nederlands</option>
+          <option value="sv">Svenska</option>
+          <option value="el">Ελληνικά</option>
+          <option value="cs">Čeština</option>
+          <option value="hu">Magyar</option>
+          <option value="ro">Română</option>
+          <option value="uk">Українська</option>
+          <option value="bn">বাঙ্গালি</option>
+          <option value="sw">Kiswahili</option>
+          <option value="ur">اردو</option>
+          <option value="am">አማርኛ</option>
+          <option value="fil">Filipino</option>
+          <option value="pa">ਪੰਜਾਬੀ</option>
+          <option value="mr">मराठी</option>
+          <option value="ta">தமிழ்</option>
+          <option value="kn">ಕನ್ನಡ</option>
+          <option value="te">తెలుగు</option>
+          <option value="or">ଓଡିଆ</option>
+          <option value="gu">ગુજરાતી</option>
+          <option value="ms">Bahasa Melayu</option>
+          <option value="my">မြန်မာ</option>
+          <option value="fi">Suomi</option>
+          <option value="da">Dansk</option>
+          <option value="no">Norsk</option>
+          <option value="he">עברית</option>
+          <option value="fa">فارسی</option>
         </select>
       </li>
     </ul>
   </aside>
 
-  <!-- Hero Section -->
-  <section id="home" class="hero">
-    <div class="hero-content">
-      <h1 data-i18n="welcome">SwiftDelivery Airfreight Logistics</h1>
-      <p data-i18n="intro">Global cargo solutions with speed, safety, and precision.</p>
-      <a href="#contact" class="cta-button" data-i18n="getStarted">Get Started</a>
-    </div>
-  </section>
+  <!-- React root for login/register and chat/admin features -->
+  <div id="root">
+    <!-- React app will mount here -->
+  </div>
 
-  <!-- Gallery Section -->
-  <section id="gallery" class="gallery">
-    <h2 data-i18n="galleryTitle">Fleet &amp; Facilities</h2>
-    <div class="gallery-slider">
-      <div class="slide"><img src="https://i.ibb.co/HfdMYGr9/Air-1-2560x1060.jpg" alt="Cargo Aircraft" /></div>
-      <div class="slide"><img src="https://i.ibb.co/cS8fDdg5/couriers-unloading-packages-from-a-delivery-truck.jpg" alt="Cargo Warehouse" /></div>
-      <div class="slide"><img src="https://i.ibb.co/Fbyy5gdn/istockphoto-1472189910-612x612.webp" alt="Loading Operation" /></div>
-      <div class="slide"><img src="https://i.ibb.co/1YkQxrHt/person-wearing-orange-tshirt-name-tag-11547159641.webp" alt="SwiftDelivery Team" /></div>
-      <div class="slide"><img src="https://i.ibb.co/SD706kNR/istockphoto-1297658517-612x612.jpg" alt="Real-time Tracking" /></div>
-    </div>
-  </section>
+  <main id="main-content">
+    <section id="home" class="hero" aria-labelledby="hero-title">
+      <!-- Video Background -->
+      <div class="video-background">
+        <video
+          id="background-video"
+          autoplay
+          muted
+          loop
+          playsinline
+          preload="auto"
+          style="position: absolute; top: 50%; left: 50%; min-width: 100%; min-height: 100%; width: auto; height: auto; transform: translate(-50%, -50%); object-fit: cover; z-index: -1;"
+        >
+          <source src="https://res.cloudinary.com/dpeyzvvnz/video/upload/v1/Woman_receiving_a_package_at_home_-_Free_Stock_Video_qmme6p.mp4" type="video/mp4">
+        </video>
+        <div class="video-overlay"></div>
+        <div class="video-overlay-dark"></div>
+      </div>
+      
+      <div class="hero-content">
+        <h1 id="hero-title" data-i18n="welcome">SwiftDelivery Airfreight Logistics</h1>
+        <p data-i18n="intro">Global cargo solutions with speed, safety, and precision.</p>
+        <div class="hero-features">
+          <div class="hero-feature">
+            <span class="hero-icon">✈️</span>
+            <span>Express Delivery</span>
+          </div>
+          <div class="hero-feature">
+            <span class="hero-icon">📍</span>
+            <span>Real-Time Tracking</span>
+          </div>
+          <div class="hero-feature">
+            <span class="hero-icon">🛡️</span>
+            <span>Fully Insured</span>
+        </div>
+      </div>
+    </section>
 
-  <!-- Services Section -->
-  <section id="services" class="services">
-    <h2 data-i18n="servicesTitle">Our Services</h2>
-    <div class="service-grid">
-      <div class="service-card">
-        <h3 data-i18n="service1">Airfreight Express</h3>
-        <p data-i18n="service1Desc">Priority cargo delivery with guaranteed timelines, ensuring your urgent shipments reach their destination quickly and safely.</p>
-      </div>
-      <div class="service-card">
-        <h3 data-i18n="service2">Global Warehousing</h3>
-        <p data-i18n="service2Desc">Secure storage solutions across strategically located international hubs, enabling efficient inventory management and quick distribution.</p>
-      </div>
-      <div class="service-card">
-        <h3 data-i18n="service3">Customs Clearance</h3>
-        <p data-i18n="service3Desc">Expert handling of documentation and border processing to expedite shipment clearance, minimizing delays and compliance risks.</p>
-      </div>
-      <div class="service-card">
-        <h3 data-i18n="service4">Temperature-Controlled Cargo</h3>
-        <p data-i18n="service4Desc">Specialized transport and storage for pharmaceuticals, perishables, and sensitive goods requiring strict temperature regulation.</p>
-      </div>
-      <div class="service-card">
-        <h3 data-i18n="service5">Dangerous Goods Transport</h3>
-        <p data-i18n="service5Desc">Certified and compliant handling of hazardous materials with stringent safety standards and legal requirements.</p>
-      </div>
-    </div>
-  </section>
 
-    <!-- Booking Dashboard -->
-    <section id="booking" class="booking">
-      <h2 data-i18n="bookingTitle">Booking Dashboard</h2>
-      <form action="https://api.web3forms.com/submit" method="POST">
+
+    <section id="services" class="services" data-aos="fade-up">
+      <h2 data-i18n="servicesTitle" data-aos="zoom-in">Our Services</h2>
+      <div class="service-grid">
+        <div class="service-card" data-aos="flip-left" data-aos-delay="0">
+          <h3 data-i18n="service1">Airfreight Express</h3>
+          <p data-i18n="service1Desc">
+            Priority cargo delivery with guaranteed timelines, ensuring your urgent shipments reach their destination quickly and safely.
+          </p>
+        </div>
+        <div class="service-card" data-aos="flip-left" data-aos-delay="100">
+          <h3 data-i18n="service2">Global Warehousing</h3>
+          <p data-i18n="service2Desc">
+            Secure storage solutions across strategically located international hubs, enabling efficient inventory management and quick distribution.
+          </p>
+        </div>
+        <div class="service-card" data-aos="flip-left" data-aos-delay="200">
+          <h3 data-i18n="service3">Customs Clearance</h3>
+          <p data-i18n="service3Desc">
+            Expert handling of documentation and border processing to expedite shipment clearance, minimizing delays and compliance risks.
+          </p>
+        </div>
+        <div class="service-card" data-aos="flip-left" data-aos-delay="300">
+          <h3 data-i18n="service4">Temperature-Controlled Cargo</h3>
+          <p data-i18n="service4Desc">
+            Specialized transport and storage for pharmaceuticals, perishables, and sensitive goods requiring strict temperature regulation.
+          </p>
+        </div>
+        <div class="service-card" data-aos="flip-left" data-aos-delay="400">
+          <h3 data-i18n="service5">Dangerous Goods Transport</h3>
+          <p data-i18n="service5Desc">
+            Certified and compliant handling of hazardous materials with stringent safety standards and legal requirements.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Instant Price Calculator Section below Services -->
+    <section class="pricing-calculator-section" data-aos="fade-up">
+      <div class="calculator-container">
+        <h2 data-i18n="pricingCalculatorTitle">Instant Price Calculator</h2>
+        <div class="calculator-widget">
+          <div class="calc-inputs">
+            <div class="input-group">
+              <label data-i18n="weightLabel">Weight (kg)</label>
+              <input type="number" id="calcWeight" placeholder="Enter weight" data-i18n="weightPlaceholder" min="0.1" step="0.1">
+            </div>
+            <div class="input-group">
+              <label data-i18n="dimensionsLabel">Dimensions (L×W×H cm)</label>
+              <div class="dimension-inputs">
+                <input type="number" id="calcLength" placeholder="L" data-i18n="lengthPlaceholder" min="1">
+                <input type="number" id="calcWidth" placeholder="W" data-i18n="widthPlaceholder" min="1">
+                <input type="number" id="calcHeight" placeholder="H" data-i18n="heightPlaceholder" min="1">
+              </div>
+            </div>
+            <div class="input-group">
+              <label data-i18n="destinationLabel">Destination</label>
+              <select id="calcDestination">
+                <option value="" data-i18n="selectDestination">Select destination</option>
+                <option value="north-america" data-i18n="dest_north_america">North America</option>
+                <option value="europe" data-i18n="dest_europe">Europe</option>
+                <option value="asia" data-i18n="dest_asia">Asia</option>
+                <option value="south-america" data-i18n="dest_south_america">South America</option>
+                <option value="africa" data-i18n="dest_africa">Africa</option>
+                <option value="oceania" data-i18n="dest_oceania">Oceania</option>
+              </select>
+            </div>
+            <div class="input-group">
+              <label data-i18n="serviceTypeLabel">Service Type</label>
+              <select id="calcService">
+                <option value="express" data-i18n="service_express">Express (1-2 days)</option>
+                <option value="standard" data-i18n="service_standard">Standard (3-5 days)</option>
+                <option value="economy" data-i18n="service_economy">Economy (7-10 days)</option>
+              </select>
+            </div>
+          </div>
+          <div class="calc-results" id="calcResults" style="display: none;">
+            <div class="price-display">
+              <span class="price-label" data-i18n="estimatedCostLabel">Estimated Cost:</span>
+              <span class="price-value" id="priceValue">$0.00</span>
+            </div>
+            <div class="price-details">
+              <div class="detail-row">
+                <span data-i18n="baseRateLabel">Base Rate:</span>
+                <span id="baseRate">$0.00</span>
+              </div>
+              <div class="detail-row">
+                <span data-i18n="fuelSurchargeLabel">Fuel Surcharge:</span>
+                <span id="fuelSurcharge">$0.00</span>
+              </div>
+              <div class="detail-row">
+                <span data-i18n="insuranceLabel">Insurance:</span>
+                <span id="insurance">$0.00</span>
+              </div>
+              <div class="detail-row total">
+                <span data-i18n="totalLabel">Total:</span>
+                <span id="totalPrice">$0.00</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="track" class="tracking" data-aos="fade-up">
+      <h2 data-i18n="trackTitle" data-aos="zoom-in">Pickup &amp; Delivery Tracking</h2>
+      <form id="trackingForm" data-aos="slide-up">
+        <div class="form-row">
+          <input type="text" id="trackingIdInput" required placeholder="Enter Tracking ID (e.g., SWIFT-1234567890-ABCDE)" />
+        </div>
+        <button type="submit" data-i18n="trackButton">Track Shipment</button>
+      </form>
+      <div class="map-container" id="leafletMapContainer" style="height: 400px; border-radius: 12px; overflow: hidden; margin-top: 20px; box-shadow: 0 4px 12px rgba(0,0,0,0.1);">
+        <div id="trackingMap" style="width: 100%; height: 100%;"></div>
+      </div>
+      <div id="trackingInfo" style="margin-top: 20px; display: none;">
+        <div style="background: #f8f9fa; padding: 20px; border-radius: 12px; border-left: 4px solid #4f46e5;">
+          <h3 style="margin: 0 0 10px 0;">📦 Your Package</h3>
+          <p id="trackingStatus" style="margin: 5px 0;"><strong>Status:</strong> <span id="statusValue">-</span></p>
+          <p id="trackingRecipient" style="margin: 5px 0;"><strong>Recipient:</strong> <span id="recipientValue">-</span></p>
+          <p id="trackingEmail" style="margin: 5px 0;"><strong>Email:</strong> <span id="emailValue">-</span></p>
+          <p id="trackingCoords" style="margin: 5px 0;"><strong>Location:</strong> <span id="coordsValue">-</span></p>
+          <p id="trackingTime" style="margin: 5px 0;"><strong>Last Updated:</strong> <span id="timeValue">-</span></p>
+          <button id="clearTrackingBtn" style="margin-top: 15px; padding: 10px 20px; background: #ef4444; color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: 600;">Clear Search</button>
+        </div>
+      </div>
+    </section>
+
+    <section id="gallery" class="gallery" data-aos="fade-up">
+      <h2 data-i18n="galleryTitle" data-aos="zoom-in">Fleet &amp; Facilities</h2>
+      <div class="gallery-slider">
+        <div class="slide" data-aos="zoom-in" data-aos-delay="0">
+          <img src="https://i.ibb.co/HfdMYGr9/Air-1-2560x1060.jpg" alt="Cargo Aircraft" loading="lazy" decoding="async" />
+        </div>
+        <div class="slide" data-aos="zoom-in" data-aos-delay="100">
+          <img src="https://i.ibb.co/cS8fDdg5/couriers-unloading-packages-from-a-delivery-truck.jpg" alt="Cargo Warehouse" loading="lazy" decoding="async" />
+        </div>
+        <div class="slide" data-aos="zoom-in" data-aos-delay="200">
+          <img src="https://i.ibb.co/Fbyy5gdn/istockphoto-1472189910-612x612.webp" alt="Loading Operation" loading="lazy" decoding="async" />
+        </div>
+        <div class="slide" data-aos="zoom-in" data-aos-delay="300">
+          <img src="https://i.ibb.co/1YkQxrHt/person-wearing-orange-tshirt-name-tag-11547159641.webp" alt="SwiftDelivery Team" loading="lazy" decoding="async" />
+        </div>
+        <div class="slide" data-aos="zoom-in" data-aos-delay="400">
+          <img src="https://i.ibb.co/SD706kNR/istockphoto-1297658517-612x612.jpg" alt="Real-time Tracking" loading="lazy" decoding="async" />
+        </div>
+       </div>
+     </section>
+
+    <!-- Enhanced Global Delivery Network -->
+    <section class="world-map-section" data-aos="fade-up">
+      <div class="map-container">
+        <h2>Global Delivery Network</h2>
+        <p>Explore our comprehensive logistics network across six continents with real-time tracking and delivery statistics</p>
+
+        <!-- Continent Maps Grid -->
+        <div class="continents-grid">
+          <!-- North America -->
+          <div class="continent-card" data-continent="north-america">
+            <div class="continent-map">
+              <svg viewBox="0 0 200 150" class="continent-svg">
+                <path d="M50 30 Q80 20 120 25 T160 30 L165 80 Q140 90 110 85 T70 80 Z"
+                      fill="#3b82f6" stroke="#1e40af" stroke-width="2"/>
+                <circle cx="90" cy="55" r="3" fill="#fbbf24"/>
+                <text x="90" y="75" text-anchor="middle" fill="white" font-size="10" font-weight="bold">NA</text>
+              </svg>
+              <div class="map-overlay">
+                <h3>North America</h3>
+              </div>
+            </div>
+            <div class="continent-stats">
+              <div class="stat-row">
+                <span class="stat-label">Major Hubs:</span>
+                <span class="stat-value">New York, Los Angeles, Toronto, Mexico City</span>
+              </div>
+              <div class="stat-row">
+                <span class="stat-label">Monthly Shipments:</span>
+                <span class="stat-value">45,234</span>
+              </div>
+              <div class="stat-row">
+                <span class="stat-label">Growth Rate:</span>
+                <span class="stat-value positive">+12%</span>
+              </div>
+              <div class="stat-row">
+                <span class="stat-label">Delivery Time:</span>
+                <span class="stat-value">1-3 days</span>
+              </div>
+            </div>
+            <div class="continent-features">
+              <span class="feature-tag">✈️ Same-Day Delivery</span>
+              <span class="feature-tag">🚚 Express Freight</span>
+              <span class="feature-tag">📦 24/7 Service</span>
+            </div>
+          </div>
+
+          <!-- Europe -->
+          <div class="continent-card" data-continent="europe">
+            <div class="continent-map">
+              <svg viewBox="0 0 200 150" class="continent-svg">
+                <path d="M80 40 Q100 35 120 40 L125 70 Q110 75 95 70 T80 65 Z"
+                      fill="#10b981" stroke="#047857" stroke-width="2"/>
+                <circle cx="100" cy="55" r="3" fill="#fbbf24"/>
+                <text x="100" y="75" text-anchor="middle" fill="white" font-size="10" font-weight="bold">EU</text>
+              </svg>
+              <div class="map-overlay">
+                <h3>Europe</h3>
+              </div>
+            </div>
+            <div class="continent-stats">
+              <div class="stat-row">
+                <span class="stat-label">Major Hubs:</span>
+                <span class="stat-value">London, Frankfurt, Paris, Amsterdam</span>
+              </div>
+              <div class="stat-row">
+                <span class="stat-label">Monthly Shipments:</span>
+                <span class="stat-value">38,921</span>
+              </div>
+              <div class="stat-row">
+                <span class="stat-label">Growth Rate:</span>
+                <span class="stat-value positive">+8%</span>
+              </div>
+              <div class="stat-row">
+                <span class="stat-label">Delivery Time:</span>
+                <span class="stat-value">1-2 days</span>
+              </div>
+            </div>
+            <div class="continent-features">
+              <span class="feature-tag">🏛️ EU Customs Expert</span>
+              <span class="feature-tag">🚄 High-Speed Rail</span>
+              <span class="feature-tag">🌡️ Cold Chain</span>
+            </div>
+          </div>
+
+          <!-- Asia -->
+          <div class="continent-card" data-continent="asia">
+            <div class="continent-map">
+              <svg viewBox="0 0 200 150" class="continent-svg">
+                <path d="M120 30 Q140 25 160 35 L165 80 Q150 85 130 80 T120 70 Z"
+                      fill="#ef4444" stroke="#b91c1c" stroke-width="2"/>
+                <circle cx="140" cy="55" r="3" fill="#fbbf24"/>
+                <text x="140" y="75" text-anchor="middle" fill="white" font-size="10" font-weight="bold">AS</text>
+              </svg>
+              <div class="map-overlay">
+                <h3>Asia Pacific</h3>
+              </div>
+            </div>
+            <div class="continent-stats">
+              <div class="stat-row">
+                <span class="stat-label">Major Hubs:</span>
+                <span class="stat-value">Tokyo, Shanghai, Singapore, Dubai</span>
+              </div>
+              <div class="stat-row">
+                <span class="stat-label">Monthly Shipments:</span>
+                <span class="stat-value">52,187</span>
+              </div>
+              <div class="stat-row">
+                <span class="stat-label">Growth Rate:</span>
+                <span class="stat-value positive">+18%</span>
+              </div>
+              <div class="stat-row">
+                <span class="stat-label">Delivery Time:</span>
+                <span class="stat-value">2-4 days</span>
+              </div>
+            </div>
+            <div class="continent-features">
+              <span class="feature-tag">🚢 Sea-Air Combo</span>
+              <span class="feature-tag">🏭 Manufacturing Hub</span>
+              <span class="feature-tag">📱 Tech Logistics</span>
+            </div>
+          </div>
+
+          <!-- South America -->
+          <div class="continent-card" data-continent="south-america">
+            <div class="continent-map">
+              <svg viewBox="0 0 200 150" class="continent-svg">
+                <path d="M70 60 Q85 55 95 60 L100 110 Q90 115 80 110 T70 100 Z"
+                      fill="#f59e0b" stroke="#d97706" stroke-width="2"/>
+                <circle cx="85" cy="85" r="3" fill="#fbbf24"/>
+                <text x="85" y="105" text-anchor="middle" fill="white" font-size="10" font-weight="bold">SA</text>
+              </svg>
+              <div class="map-overlay">
+                <h3>South America</h3>
+              </div>
+            </div>
+            <div class="continent-stats">
+              <div class="stat-row">
+                <span class="stat-label">Major Hubs:</span>
+                <span class="stat-value">São Paulo, Buenos Aires, Lima</span>
+              </div>
+              <div class="stat-row">
+                <span class="stat-label">Monthly Shipments:</span>
+                <span class="stat-value">15,432</span>
+              </div>
+              <div class="stat-row">
+                <span class="stat-label">Growth Rate:</span>
+                <span class="stat-value positive">+15%</span>
+              </div>
+              <div class="stat-row">
+                <span class="stat-label">Delivery Time:</span>
+                <span class="stat-value">3-5 days</span>
+              </div>
+            </div>
+            <div class="continent-features">
+              <span class="feature-tag">🌴 Tropical Expert</span>
+              <span class="feature-tag">🍋 Fresh Produce</span>
+              <span class="feature-tag">⛰️ Mountain Routes</span>
+            </div>
+          </div>
+
+          <!-- Africa -->
+          <div class="continent-card" data-continent="africa">
+            <div class="continent-map">
+              <svg viewBox="0 0 200 150" class="continent-svg">
+                <path d="M85 40 Q100 35 115 45 L120 90 Q105 95 90 90 T85 80 Z"
+                      fill="#8b5cf6" stroke="#6d28d9" stroke-width="2"/>
+                <circle cx="100" cy="65" r="3" fill="#fbbf24"/>
+                <text x="100" y="85" text-anchor="middle" fill="white" font-size="10" font-weight="bold">AF</text>
+              </svg>
+              <div class="map-overlay">
+                <h3>Africa</h3>
+              </div>
+            </div>
+            <div class="continent-stats">
+              <div class="stat-row">
+                <span class="stat-label">Major Hubs:</span>
+                <span class="stat-value">Cairo, Johannesburg, Lagos, Nairobi</span>
+              </div>
+              <div class="stat-row">
+                <span class="stat-label">Monthly Shipments:</span>
+                <span class="stat-value">12,098</span>
+              </div>
+              <div class="stat-row">
+                <span class="stat-label">Growth Rate:</span>
+                <span class="stat-value positive">+22%</span>
+              </div>
+              <div class="stat-row">
+                <span class="stat-label">Delivery Time:</span>
+                <span class="stat-value">4-7 days</span>
+              </div>
+            </div>
+            <div class="continent-features">
+              <span class="feature-tag">🏜️ Desert Logistics</span>
+              <span class="feature-tag">💎 Mining Support</span>
+              <span class="feature-tag">🌾 Agricultural</span>
+            </div>
+          </div>
+
+          <!-- Oceania -->
+          <div class="continent-card" data-continent="oceania">
+            <div class="continent-map">
+              <svg viewBox="0 0 200 150" class="continent-svg">
+                <ellipse cx="150" cy="100" rx="25" ry="20"
+                         fill="#06b6d4" stroke="#0891b2" stroke-width="2"/>
+                <circle cx="150" cy="100" r="3" fill="#fbbf24"/>
+                <text x="150" y="120" text-anchor="middle" fill="white" font-size="10" font-weight="bold">OC</text>
+              </svg>
+              <div class="map-overlay">
+                <h3>Oceania</h3>
+              </div>
+            </div>
+            <div class="continent-stats">
+              <div class="stat-row">
+                <span class="stat-label">Major Hubs:</span>
+                <span class="stat-value">Sydney, Melbourne, Auckland</span>
+              </div>
+              <div class="stat-row">
+                <span class="stat-label">Monthly Shipments:</span>
+                <span class="stat-value">18,765</span>
+              </div>
+              <div class="stat-row">
+                <span class="stat-label">Growth Rate:</span>
+                <span class="stat-value positive">+10%</span>
+              </div>
+              <div class="stat-row">
+                <span class="stat-label">Delivery Time:</span>
+                <span class="stat-value">2-4 days</span>
+              </div>
+            </div>
+            <div class="continent-features">
+              <span class="feature-tag">🏝️ Island Expert</span>
+              <span class="feature-tag">🐨 Wildlife Transport</span>
+              <span class="feature-tag">🌊 Marine Logistics</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Global Statistics Overview -->
+        <div class="global-overview">
+          <div class="overview-card">
+            <h3>🌍 Global Reach</h3>
+            <div class="big-stat">150+</div>
+            <p>Countries Served</p>
+          </div>
+          <div class="overview-card">
+            <h3>📦 Monthly Volume</h3>
+            <div class="big-stat">182K+</div>
+            <p>Shipments Delivered</p>
+          </div>
+          <div class="overview-card">
+            <h3>⚡ Average Speed</h3>
+            <div class="big-stat">2.5</div>
+            <p>Days Delivery Time</p>
+          </div>
+          <div class="overview-card">
+            <h3>🎯 Success Rate</h3>
+            <div class="big-stat">99.8%</div>
+            <p>On-Time Delivery</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="testimonials" class="testimonials" data-aos="fade-up">
+      <h2 data-i18n="testimonialsTitle" data-aos="zoom-in">Customer Testimonials</h2>
+      <div class="testimonial-grid">
+        <div class="testimonial-card" data-aos="slide-up" data-aos-delay="0">
+          <div class="testimonial-header">
+            <img src="https://randomuser.me/api/portraits/men/32.jpg" alt="Hans Mueller" class="testimonial-avatar">
+            <div class="testimonial-info">
+              <span class="testimonial-author">Hans Müller</span>
+              <div class="testimonial-rating">
+                <span class="stars">★★★★★</span>
+              </div>
+            </div>
+          </div>
+          <p class="testimonial-text">
+            "SwiftDelivery got our medical supplies across borders in record time. Highly recommended!"
+          </p>
+          <span class="testimonial-company">CEO, Müller Pharma GmbH</span>
+        </div>
+        <div class="testimonial-card" data-aos="slide-up" data-aos-delay="100">
+          <div class="testimonial-header">
+            <img src="https://randomuser.me/api/portraits/women/44.jpg" alt="Sophie Laurent" class="testimonial-avatar">
+            <div class="testimonial-info">
+              <span class="testimonial-author">Sophie Laurent</span>
+              <div class="testimonial-rating">
+                <span class="stars">★★★★★</span>
+              </div>
+            </div>
+          </div>
+          <p class="testimonial-text">
+            "Their tracking system is top-notch. I knew exactly where my shipment was at all times."
+          </p>
+          <span class="testimonial-company">Logistics Director, Laurent Fashion</span>
+        </div>
+        <div class="testimonial-card" data-aos="slide-up" data-aos-delay="200">
+          <div class="testimonial-header">
+            <img src="https://randomuser.me/api/portraits/men/65.jpg" alt="James Anderson" class="testimonial-avatar">
+            <div class="testimonial-info">
+              <span class="testimonial-author">James Anderson</span>
+              <div class="testimonial-rating">
+                <span class="stars">★★★★★</span>
+              </div>
+            </div>
+          </div>
+          <p class="testimonial-text">
+            "Professional, fast, and reliable. SwiftDelivery is our go-to logistics partner."
+          </p>
+          <span class="testimonial-company">Operations Manager, TechCorp UK</span>
+        </div>
+        <div class="testimonial-card" data-aos="slide-up" data-aos-delay="300">
+          <div class="testimonial-header">
+            <img src="https://randomuser.me/api/portraits/women/28.jpg" alt="Isabella Rossi" class="testimonial-avatar">
+            <div class="testimonial-info">
+              <span class="testimonial-author">Isabella Rossi</span>
+              <div class="testimonial-rating">
+                <span class="stars">★★★★★</span>
+              </div>
+            </div>
+          </div>
+          <p class="testimonial-text">
+            "Exceptional service for our temperature-sensitive pharmaceuticals. Always on time!"
+          </p>
+          <span class="testimonial-company">Supply Chain Head, Rossi Medical</span>
+        </div>
+        <div class="testimonial-card" data-aos="slide-up" data-aos-delay="400">
+          <div class="testimonial-header">
+            <img src="https://randomuser.me/api/portraits/men/42.jpg" alt="Karl Schmidt" class="testimonial-avatar">
+            <div class="testimonial-info">
+              <span class="testimonial-author">Karl Schmidt</span>
+              <div class="testimonial-rating">
+                <span class="stars">★★★★☆</span>
+              </div>
+            </div>
+          </div>
+          <p class="testimonial-text">
+            "Great communication and transparent pricing. Our European distribution has never been smoother."
+          </p>
+          <span class="testimonial-company">CEO, Schmidt Automotive</span>
+        </div>
+        <div class="testimonial-card" data-aos="slide-up" data-aos-delay="500">
+          <div class="testimonial-header">
+            <img src="https://randomuser.me/api/portraits/women/36.jpg" alt="Emma Thompson" class="testimonial-avatar">
+            <div class="testimonial-info">
+              <span class="testimonial-author">Emma Thompson</span>
+              <div class="testimonial-rating">
+                <span class="stars">★★★★★</span>
+              </div>
+            </div>
+          </div>
+          <p class="testimonial-text">
+            "The customs clearance service saved us weeks of delays. Absolutely invaluable for international trade."
+          </p>
+          <span class="testimonial-company">Import Manager, Thompson Foods</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- New Introduction Section -->
+    <section class="intro-section" data-aos="fade-up">
+      <div class="intro-container">
+        <div class="intro-text">
+          <h2>Why Choose SwiftDelivery?</h2>
+          <p>With over 25 years of excellence in airfreight logistics, we connect businesses across continents with unparalleled speed and reliability. Our state-of-the-art tracking technology, combined with our extensive global network, ensures your cargo reaches its destination safely and on time, every time.</p>
+          <div class="intro-stats">
+            <div class="stat-item">
+              <h3>150+</h3>
+              <p>Countries Served</p>
+            </div>
+            <div class="stat-item">
+              <h3>99.8%</h3>
+              <p>On-Time Delivery</p>
+            </div>
+            <div class="stat-item">
+              <h3>24/7</h3>
+              <p>Support Available</p>
+            </div>
+          </div>
+        </div>
+        <div class="intro-visual">
+          <div class="feature-cards">
+            <div class="feature-card">
+              <div class="feature-icon">✈️</div>
+              <h3>Global Network</h3>
+              <p>Access to major airports and logistics hubs worldwide</p>
+            </div>
+            <div class="feature-card">
+              <div class="feature-icon">📊</div>
+              <h3>Real-Time Tracking</h3>
+              <p>Monitor your shipment every step of the journey</p>
+            </div>
+            <div class="feature-card">
+              <div class="feature-icon">🛡️</div>
+              <h3>Secure Transport</h3>
+              <p>Advanced security measures for valuable cargo</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Interactive Delivery Timeline -->
+    <section class="delivery-timeline-section" data-aos="fade-up">
+      <div class="timeline-container">
+        <h2>Delivery Journey Timeline</h2>
+        <p>Experience our seamless delivery process from pickup to final destination</p>
+        
+        <div class="timeline-wrapper">
+          <div class="timeline-track">
+            <div class="timeline-progress" id="timelineProgress"></div>
+          </div>
+          
+          <div class="timeline-steps">
+            <div class="timeline-step active" data-step="1">
+              <div class="step-icon">📦</div>
+              <div class="step-content">
+                <h4>Package Pickup</h4>
+                <p>We collect your package from your location</p>
+                <span class="step-time">Day 1, 09:00 AM</span>
+              </div>
+            </div>
+            
+            <div class="timeline-step" data-step="2">
+              <div class="step-icon">🏭</div>
+              <div class="step-content">
+                <h4>Warehouse Processing</h4>
+                <p>Package sorted and prepared for shipment</p>
+                <span class="step-time">Day 1, 02:00 PM</span>
+              </div>
+            </div>
+            
+            <div class="timeline-step" data-step="3">
+              <div class="step-icon">✈️</div>
+              <div class="step-content">
+                <h4>Air Transit</h4>
+                <p>Package in flight to destination</p>
+                <span class="step-time">Day 2, 06:00 AM</span>
+              </div>
+            </div>
+            
+            <div class="timeline-step" data-step="4">
+              <div class="step-icon">🛃</div>
+              <div class="step-content">
+                <h4>Customs Clearance</h4>
+                <p>Documentation and border processing</p>
+                <span class="step-time">Day 2, 02:00 PM</span>
+              </div>
+            </div>
+            
+            <div class="timeline-step" data-step="5">
+              <div class="step-icon">🚚</div>
+              <div class="step-content">
+                <h4>Local Delivery</h4>
+                <p>Final delivery to recipient</p>
+                <span class="step-time">Day 3, 10:00 AM</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <div class="timeline-controls">
+          <button onclick="animateTimeline()" class="timeline-btn">Animate Journey</button>
+          <button onclick="resetTimeline()" class="timeline-btn secondary">Reset</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- Real Customer Success Stories -->
+    <section class="case-studies-section" data-aos="fade-up">
+      <div class="case-studies-container">
+        <h2>Real Success Stories</h2>
+        <p>See how leading companies trust SwiftDelivery for their critical logistics needs</p>
+        
+        <div class="case-studies-grid">
+          <div class="case-study-card">
+            <div class="case-study-header">
+              <div class="company-logo">
+                <img src="https://images.unsplash.com/photo-1557804506-669a67965ba0?w=60&h=60&fit=crop&crop=center&auto=format" alt="MedTech Solutions">
+              </div>
+              <div class="company-info">
+                <h3>MedTech Solutions GmbH</h3>
+                <p class="industry">🏥 Medical Equipment • Berlin, Germany</p>
+              </div>
+            </div>
+            <div class="case-study-image">
+              <img src="https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?w=400&h=250&fit=crop&auto=format" alt="Medical equipment delivery">
+            </div>
+            <div class="case-study-content">
+              <h4>Critical Medical Equipment Delivery</h4>
+              <p>"SwiftDelivery reduced our international shipping time from 8 days to just 48 hours for life-saving equipment. Their temperature-controlled shipping and real-time tracking gave us complete confidence."</p>
+              <div class="testimonial">
+                <div class="client-info">
+                  <img src="https://randomuser.me/api/portraits/men/45.jpg" alt="Dr. Klaus Weber">
+                  <div>
+                    <strong>Dr. Klaus Weber</strong>
+                    <span>Supply Chain Director</span>
+                  </div>
+                </div>
+                <div class="rating">★★★★★</div>
+              </div>
+              <div class="metrics">
+                <span class="metric">⚡ 75% Faster Delivery</span>
+                <span class="metric">🌡️ 100% Temperature Compliance</span>
+                <span class="metric">💉 2,500+ Lives Impacted</span>
+              </div>
+            </div>
+          </div>
+          
+          <div class="case-study-card">
+            <div class="case-study-header">
+              <div class="company-logo">
+                <img src="https://images.unsplash.com/photo-1560472354-b33ff0c44a43?w=60&h=60&fit=crop&crop=center&auto=format" alt="Fashion Forward">
+              </div>
+              <div class="company-info">
+                <h3>Fashion Forward Ltd</h3>
+                <p class="industry">👗 Luxury Fashion • Milan, Italy</p>
+              </div>
+            </div>
+            <div class="case-study-image">
+              <img src="https://images.unsplash.com/photo-1445205170230-053b83016050?w=400&h=250&fit=crop&auto=format" alt="Fashion logistics">
+            </div>
+            <div class="case-study-content">
+              <h4>Global Fashion Supply Chain</h4>
+              <p>"We ship to 45 countries and SwiftDelivery's customs clearance expertise has eliminated delays. Their white-glove service ensures our luxury items arrive in perfect condition."</p>
+              <div class="testimonial">
+                <div class="client-info">
+                  <img src="https://randomuser.me/api/portraits/women/38.jpg" alt="Isabella Romano">
+                  <div>
+                    <strong>Isabella Romano</strong>
+                    <span>Logistics Manager</span>
+                  </div>
+                </div>
+                <div class="rating">★★★★★</div>
+              </div>
+              <div class="metrics">
+                <span class="metric">🌍 45 Countries Served</span>
+                <span class="metric">📦 99.8% On-Time Delivery</span>
+                <span class="metric">💎 Zero Damage Claims</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="case-study-card">
+            <div class="case-study-header">
+              <div class="company-logo">
+                <img src="https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=60&h=60&fit=crop&crop=center&auto=format" alt="TechCorp">
+              </div>
+              <div class="company-info">
+                <h3>TechCorp Industries</h3>
+                <p class="industry">💻 Electronics • San Francisco, USA</p>
+              </div>
+            </div>
+            <div class="case-study-image">
+              <img src="https://images.unsplash.com/photo-1563013544-824ae1b704d3?w=400&h=250&fit=crop&auto=format" alt="Electronics shipping">
+            </div>
+            <div class="case-study-content">
+              <h4>High-Value Electronics Distribution</h4>
+              <p>"SwiftDelivery's secure transport and insurance coverage gave us peace of mind shipping $50M+ in components. Their tracking system integrates seamlessly with our ERP."</p>
+              <div class="testimonial">
+                <div class="client-info">
+                  <img src="https://randomuser.me/api/portraits/men/52.jpg" alt="Michael Chen">
+                  <div>
+                    <strong>Michael Chen</strong>
+                    <span>VP Operations</span>
+                  </div>
+                </div>
+                <div class="rating">★★★★★</div>
+              </div>
+              <div class="metrics">
+                <span class="metric">🔒 $50M+ Insured Shipments</span>
+                <span class="metric">📊 ERP Integration</span>
+                <span class="metric">⚡ 24-Hour Express</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+
+
+
+
+
+
+    <section class="highlight">
+      <h1>Swift Delivery</h1>
+      <p>Manage your deliveries easily.</p>
+      <a href="courier-tracking.html" target="_blank" rel="noopener noreferrer" class="track-btn">
+        🚚 Track Courier
+      </a>
+    </section>
+
+
+ 
+     <section id="booking" class="booking" data-aos="fade-up">
+      <h2 data-i18n="bookingTitle" data-aos="zoom-in">Booking Dashboard</h2>
+      <form action="https://api.web3forms.com/submit" method="POST" data-aos="slide-up">
         <input type="hidden" name="access_key" value="6f0cf1cf-d8ed-410b-a733-9ee33d4643ba" />
         <input type="text" name="name" required placeholder="Full Name" data-i18n="bookingNamePlaceholder" />
         <input type="email" name="email" required placeholder="Email Address" data-i18n="bookingEmailPlaceholder" />
-        <textarea name="message" required placeholder="Booking Details (date, cargo type, destination)" data-i18n="bookingMessagePlaceholder"></textarea>
+        <textarea
+          name="message"
+          required
+          placeholder="Booking Details (date, cargo type, destination)"
+          data-i18n="bookingMessagePlaceholder"
+        ></textarea>
         <button type="submit" data-i18n="bookingSubmitButton">Submit Booking</button>
       </form>
     </section>
 
-  <!-- Testimonials Section -->
-  <section id="testimonials" class="testimonials">
-    <h2 data-i18n="testimonialsTitle">Customer Testimonials</h2>
-    <div class="testimonial-grid">
-      <div class="testimonial-card">
-        <p data-i18n="testimonial1Text">"SwiftDelivery got our medical supplies across borders in record time. Highly recommended!"</p>
-        <span data-i18n="testimonial1Author">- Dr. Amina Yusuf</span>
-      </div>
-      <div class="testimonial-card">
-        <p data-i18n="testimonial2Text">"Their tracking system is top-notch. I knew exactly where my shipment was at all times."</p>
-        <span data-i18n="testimonial2Author">- James Okoro</span>
-      </div>
-      <div class="testimonial-card">
-        <p data-i18n="testimonial3Text">"Professional, fast, and reliable. SwiftDelivery is our go-to logistics partner."</p>
-        <span data-i18n="testimonial3Author">- GlobalTech Ltd.</span>
+
+
+    <section id="contact" class="contact" data-aos="fade-up">
+      <h2 data-i18n="contactTitle" data-aos="zoom-in">Contact Us</h2>
+      <form action="https://api.web3forms.com/submit" method="POST" data-aos="slide-up">
+        <input type="hidden" name="access_key" value="237d4b4c-c4de-472e-a7f1-d22490311751" />
+        <input type="text" name="name" required placeholder="Your Name" />
+        <input type="email" name="email" required placeholder="Your Email" />
+        <textarea name="message" required placeholder="Your Message"></textarea>
+        <button type="submit" data-i18n="submitButton">Submit Form</button>
+      </form>
+    </section>
+
+
+
+    <!-- Tracking Modal Overlay -->
+    <div id="trackingModalOverlay" class="tracking-modal-overlay" style="display: none !important; visibility: hidden !important; opacity: 0 !important; pointer-events: none !important;">
+      <div class="tracking-modal-container">
+        <!-- Modal Header -->
+        <div class="tracking-modal-header">
+          <h1 class="tracking-modal-title">📦 Live Tracking</h1>
+          <button type="button" id="closeTrackingModal" class="tracking-modal-close" aria-label="Close tracking">✕</button>
+        </div>
+
+        <!-- Modal Content -->
+        <div class="tracking-modal-content">
+          <!-- Map Section -->
+          <div class="tracking-modal-map-section">
+            <div id="trackingModalMap" class="tracking-modal-map"></div>
+            <div class="tracking-modal-map-controls">
+              <button type="button" class="map-control-btn satellite-toggle" title="Toggle Satellite View" onclick="toggleTrackingMapView()">🛰️ Satellite</button>
+            </div>
+          </div>
+
+          <!-- Info Section -->
+          <div class="tracking-modal-info-section">
+            <!-- Package Status -->
+            <div class="tracking-info-card">
+              <div class="info-card-header">
+                <h2>📍 Package Status</h2>
+                <span id="modalStatusBadge" class="status-badge"></span>
+              </div>
+              <div class="info-card-content">
+                <div class="info-row">
+                  <span class="info-label">Tracking ID:</span>
+                  <span id="modalTrackingId" class="info-value">-</span>
+                </div>
+                <div class="info-row">
+                  <span class="info-label">Status:</span>
+                  <span id="modalStatus" class="info-value">-</span>
+                </div>
+                <div class="info-row">
+                  <span class="info-label">Recipient:</span>
+                  <span id="modalRecipient" class="info-value">-</span>
+                </div>
+                <div class="info-row">
+                  <span class="info-label">Email:</span>
+                  <span id="modalEmail" class="info-value">-</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Location Info -->
+            <div class="tracking-info-card">
+              <div class="info-card-header">
+                <h2>📌 Location Details</h2>
+              </div>
+              <div class="info-card-content">
+                <div class="info-row">
+                  <span class="info-label">Current Location:</span>
+                  <span id="modalLocation" class="info-value">-</span>
+                </div>
+                <div class="info-row">
+                  <span class="info-label">Last Updated:</span>
+                  <span id="modalUpdated" class="info-value">-</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Progress Bar -->
+            <div class="progress-container">
+              <div class="progress-bar" id="modalProgressBar" style="width: 0%"></div>
+            </div>
+
+            <!-- Tracking Timeline -->
+            <div class="tracking-timeline" id="trackingTimeline" style="display: none;">
+              <h3 style="margin-bottom: 15px; color: var(--text-light);">📍 Journey Timeline</h3>
+              <div class="timeline-container" id="timelineContainer"></div>
+            </div>
+
+            <!-- Event Log -->
+            <div class="event-log-container" id="eventLogContainer" style="display: none;">
+              <div class="event-log-header" id="eventLogHeader">
+                <span>📋 Detailed Events</span>
+                <span class="event-log-toggle" id="eventLogToggle">▼</span>
+              </div>
+              <div class="event-log-items" id="eventLogItems"></div>
+            </div>
+
+            <!-- Close Button -->
+            <button type="button" id="closeModalButton" class="tracking-modal-action-btn">Close Tracking</button>
+          </div>
+        </div>
       </div>
     </div>
-  </section>
 
-  <!-- Contact Section -->
-  <section id="contact" class="contact">
-    <h2 data-i18n="contactTitle">Contact Us</h2>
-    <form action="https://api.web3forms.com/submit" method="POST">
-      <input type="hidden" name="access_key" value="237d4b4c-c4de-472e-a7f1-d22490311751">
-      <input type="text" name="name" required placeholder="Your Name" />
-      <input type="email" name="email" required placeholder="Your Email" />
-      <textarea name="message" required placeholder="Your Message"></textarea>
-      <button type="submit" data-i18n="submitButton">Submit Form</button>
-    </form>
-  </section>
+    <!-- Admin-Customer Messaging System -->
+    <div id="messagingSystemOverlay" class="messaging-overlay">
+      <div class="messaging-container">
+        <!-- Messaging Header -->
+        <div class="messaging-header">
+          <div class="messaging-header-info">
+            <h2 class="messaging-title">💬 Support Chat</h2>
+            <span class="messaging-status" id="agentStatus">Waiting for agent...</span>
+          </div>
+          <button type="button" id="closeMessagingBtn" class="messaging-close" aria-label="Close messaging">✕</button>
+        </div>
 
-  <!-- Login Section -->
-  <section id="login" class="login">
-    <h2 data-i18n="loginTitle">Client Login</h2>
-    <form action="https://api.web3forms.com/submit" method="POST">
-      <input type="hidden" name="access_key" value="237d4b4c-c4de-472e-a7f1-d22490311751">
-      <input type="email" name="email" required placeholder="Email" />
-      <input type="password" name="password" required placeholder="Password" />
-      <button type="submit" data-i18n="loginButton">Login</button>
-    </form>
-  </section>
+        <!-- Messages Display Area -->
+        <div class="messaging-body" id="messagingBody">
+          <div class="system-message">Welcome to SwiftDelivery Support! An agent will assist you shortly.</div>
+        </div>
 
-  <!-- Register Section -->
-  <section id="register" class="register">
-    <h2 data-i18n="registerTitle">New Client Registration</h2>
-    <form>
-      <div id="registerSection">
-  <input type="text" id="regUsername" placeholder="Username" required data-i18n="registerUsernamePlaceholder" />
-  <input type="password" id="regPassword" placeholder="Password" required data-i18n="registerPasswordPlaceholder" />
-  <button id="registerBtn" type="button" data-i18n="registerButton">Register</button>
+        <!-- Message Input Area -->
+        <div class="messaging-input-section">
+          <form id="messagingForm" class="messaging-form">
+            <input 
+              type="text" 
+              id="messageInput" 
+              placeholder="Type your message..." 
+              class="messaging-input"
+              autocomplete="off"
+            />
+            <button type="submit" class="messaging-send-btn">Send</button>
+          </form>
+        </div>
       </div>
-    </form>
-  </section>
-  <!-- Pickup & Delivery Section -->
-  <section id="track" class="tracking">
-    <h2 data-i18n="trackTitle">Pickup &amp; Delivery Tracking</h2>
-    <form id="trackingForm">
-      <div class="form-row">
-        <input type="text" name="pickup" required placeholder="Pickup Address" />
-        <input type="text" name="delivery" required placeholder="Delivery Address" />
+    </div>
+
+    <!-- Floating Messaging Button for Logged-in Users -->
+    <button id="floatingMessagingBtn" class="floating-messaging-btn" title="Contact Support">💬</button>
+
+    <section id="faq" class="faq">
+      <h2 data-i18n="faqTitle">Frequently Asked Questions</h2>
+      <details>
+        <summary data-i18n="faq1Q">How fast is airfreight delivery?</summary>
+        <p data-i18n="faq1A">
+          Most airfreight shipments arrive within 24–48 hours, depending on the destination, flight availability, and customs processing.
+          We prioritize speed and reliability, ensuring your cargo reaches its destination as quickly as possible. Expedited options are
+          available for urgent shipments.
+        </p>
+      </details>
+      <details>
+        <summary data-i18n="faq2Q">Do you handle international customs?</summary>
+        <p data-i18n="faq2A">
+          Yes, we provide comprehensive customs clearance services for all international shipments. Our experienced team navigates complex
+          regulations and documentation to ensure smooth border transitions, minimizing delays and avoiding compliance issues.
+        </p>
+      </details>
+      <details>
+        <summary data-i18n="faq3Q">Can I track my cargo in real time?</summary>
+        <p data-i18n="faq3A">
+          Absolutely. Our advanced tracking system offers live updates, GPS location data, and status notifications throughout the journey.
+          You'll have full visibility from pickup to final delivery, accessible via our online portal or mobile app.
+        </p>
+      </details>
+      <details>
+        <summary data-i18n="faq4Q">Do you offer temperature-controlled shipping?</summary>
+        <p data-i18n="faq4A">
+          Yes, we specialize in cold-chain logistics tailored for sensitive goods such as pharmaceuticals, vaccines, fresh produce, and
+          other perishables. Our temperature-controlled containers and monitoring systems maintain optimal conditions throughout transit.
+        </p>
+      </details>
+      <details>
+        <summary data-i18n="faq5Q">Is weekend delivery available?</summary>
+        <p data-i18n="faq5A">
+          Weekend delivery is available in select regions and for eligible service tiers. To confirm availability for your shipment, please
+          contact our support team. We strive to accommodate your schedule with flexible delivery options.
+        </p>
+      </details>
+    </section>
+
+    <section id="livechat" class="livechat">
+      <h2 data-i18n="liveChatTitle">Live Chat Support</h2>
+      <form action="https://api.web3forms.com/submit" method="POST">
+        <input type="hidden" name="access_key" value="6f0cf1cf-d8ed-410b-a733-9ee33d4643ba" />
+        <input type="text" name="name" required placeholder="Your Name" data-i18n="liveChatNamePlaceholder" />
+        <input type="email" name="email" required placeholder="Your Email" />
+        <textarea name="message" required placeholder="Your Message" data-i18n="liveChatMessagePlaceholder"></textarea>
+        <button type="submit" data-i18n="submitButton">Submit Form</button>
+      </form>
+    </section>
+
+    <div id="chatbot" class="chatbot">
+      <div class="chat-header">
+        <span data-i18n="chatbotTitle">SwiftDelivery Bot</span>
+        <button id="voiceModeToggle" type="button">Voice: Off</button>
+        <button id="closeChatbot" aria-label="Close chat">✖</button>
       </div>
-      <input type="text" id="trackingId" name="trackingId" required placeholder="Tracking ID" />
-      <button type="submit" data-i18n="trackButton">Track Shipment</button>
-    </form>
-    <div class="map-container">
-      <iframe
-        src="https://www.google.com/maps/embed?pb=!1m18..." 
-        width="100%"
-        height="300"
-        style="border:0;"
-        allowfullscreen
-        loading="lazy"
-        title="Live Delivery Tracking Map"
-        aria-label="Google Maps tracking view">
-      </iframe>
+      <div class="chat-body" id="chatBody">
+        <div class="bot-message" data-i18n="chatbotGreeting">Hi there! How can I help you today?</div>
+      </div>
+      <div id="smartSuggestions" style="display: none; padding: 6px; background: #f9fafb; border-top: 1px solid #e5e7eb; gap: 4px;">
+        <div style="font-size: 10px; font-weight: 600; color: #6b7280; margin-bottom: 4px;">✨ Tips</div>
+        <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 4px; max-height: 80px; overflow-y: auto;">
+          <button class="suggestion-btn" data-suggestion="Switch to Day Mode" style="padding: 4px 6px; background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%); color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 10px; font-weight: 600; transition: transform 0.2s, opacity 0.2s; transform-origin: center; white-space: nowrap;">☀️ Day</button>
+          <button class="suggestion-btn" data-suggestion="Switch to Night Mode" style="padding: 4px 6px; background: linear-gradient(135deg, #60a5fa 0%, #3b82f6 100%); color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 10px; font-weight: 600; transition: transform 0.2s, opacity 0.2s; transform-origin: center; white-space: nowrap;">🌙 Night</button>
+          <button class="suggestion-btn" data-suggestion="Change language to Spanish" style="padding: 4px 6px; background: linear-gradient(135deg, #a78bfa 0%, #8b5cf6 100%); color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 10px; font-weight: 600; transition: transform 0.2s, opacity 0.2s; transform-origin: center; white-space: nowrap;">🌐 ES</button>
+          <button class="suggestion-btn" data-suggestion="Help me track my package" style="padding: 4px 6px; background: linear-gradient(135deg, #34d399 0%, #10b981 100%); color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 10px; font-weight: 600; transition: transform 0.2s, opacity 0.2s; transform-origin: center; white-space: nowrap;">📦 Track</button>
+          <button class="suggestion-btn" data-suggestion="Check delivery status" style="padding: 4px 6px; background: linear-gradient(135deg, #f472b6 0%, #ec4899 100%); color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 10px; font-weight: 600; transition: transform 0.2s, opacity 0.2s; transform-origin: center; white-space: nowrap;">✓ Status</button>
+          <button class="suggestion-btn" data-suggestion="Connect me with an agent" style="padding: 4px 6px; background: linear-gradient(135deg, #818cf8 0%, #6366f1 100%); color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 10px; font-weight: 600; transition: transform 0.2s, opacity 0.2s; transform-origin: center; white-space: nowrap;">👤 Agent</button>
+        </div>
+      </div>
+      <div class="chat-input" style="display: flex; gap: 8px; align-items: flex-start;">
+        <div style="flex-shrink: 0; width: 140px;">
+          <button id="voiceToggleBtn" type="button" title="Toggle voice" style="padding: 8px 12px; background: #9ca3af; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 12px; font-weight: 600; width: 100%; white-space: nowrap;">🔇 Voice</button>
+          <div id="voiceControls" style="display: none; margin-top: 4px; gap: 4px; flex-direction: column; flex-shrink: 0;">
+            <button id="voiceListenBtn" type="button" style="padding: 8px 10px; background: #4f46e5; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 12px; font-weight: 600; width: 100%; white-space: nowrap;">🎤 Speak</button>
+            <button id="voiceSendBtn" type="button" style="padding: 8px 10px; background: #10b981; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 12px; font-weight: 600; width: 100%; display: none; white-space: nowrap;">✓ Send</button>
+          </div>
+        </div>
+        <div style="flex: 1; display: flex; gap: 8px; align-items: flex-start;">
+          <input
+            type="text"
+            id="chatMessage"
+            placeholder="Type your message..."
+            data-i18n="chatMessagePlaceholder"
+            style="flex: 1; padding: 8px 12px; border: 1px solid #e5e7eb; border-radius: 4px; font-size: 14px;"
+          />
+          <button id="sendChat" type="button" data-i18n="sendButton" style="padding: 8px 16px; background: #4f46e5; color: white; border: none; border-radius: 4px; cursor: pointer; font-weight: 600;">Send</button>
+        </div>
+      </div>
     </div>
-  </section>
 
-  <!-- FAQ Section -->
-  <section id="faq" class="faq">
-    <h2 data-i18n="faqTitle">Frequently Asked Questions</h2>
-    <details>
-      <summary data-i18n="faq1Q">How fast is airfreight delivery?</summary>
-      <p data-i18n="faq1A">Most airfreight shipments arrive within 24–48 hours, depending on the destination, flight availability, and customs processing. We prioritize speed and reliability, ensuring your cargo reaches its destination as quickly as possible. Expedited options are available for urgent shipments.</p>
-    </details>
-    <details>
-      <summary data-i18n="faq2Q">Do you handle international customs?</summary>
-      <p data-i18n="faq2A">Yes, we provide comprehensive customs clearance services for all international shipments. Our experienced team navigates complex regulations and documentation to ensure smooth border transitions, minimizing delays and avoiding compliance issues.</p>
-    </details>
-    <details>
-      <summary data-i18n="faq3Q">Can I track my cargo in real time?</summary>
-      <p data-i18n="faq3A">Absolutely. Our advanced tracking system offers live updates, GPS location data, and status notifications throughout the journey. You’ll have full visibility from pickup to final delivery, accessible via our online portal or mobile app.</p>
-    </details>
-    <details>
-      <summary data-i18n="faq4Q">Do you offer temperature-controlled shipping?</summary>
-      <p data-i18n="faq4A">Yes, we specialize in cold-chain logistics tailored for sensitive goods such as pharmaceuticals, vaccines, fresh produce, and other perishables. Our temperature-controlled containers and monitoring systems maintain optimal conditions throughout transit.</p>
-    </details>
-    <details>
-      <summary data-i18n="faq5Q">Is weekend delivery available?</summary>
-      <p data-i18n="faq5A">Weekend delivery is available in select regions and for eligible service tiers. To confirm availability for your shipment, please contact our support team. We strive to accommodate your schedule with flexible delivery options.</p>
-    </details>
-  </section>
+    <section class="newsletter">
+      <h2 data-i18n="newsletterTitle">Stay Updated</h2>
+      <p data-i18n="newsletterText">Subscribe to our newsletter for airfreight tips, updates, and exclusive offers.</p>
+      <form id="newsletterForm">
+        <label for="newsletterEmail" data-i18n="emailLabel">Email</label>
+        <input type="email" id="newsletterEmail" name="newsletterEmail" required />
+        <button type="submit" data-i18n="subscribeButton">Subscribe</button>
+      </form>
+    </section>
 
-  <!-- Live Chat Support -->
-  <section id="livechat" class="livechat">
-    <h2 data-i18n="liveChatTitle">Live Chat Support</h2>
-    <form action="https://api.web3forms.com/submit" method="POST">
-      <input type="hidden" name="access_key" value="6f0cf1cf-d8ed-410b-a733-9ee33d4643ba">
-      <input type="text" name="name" required placeholder="Your Name" data-i18n="liveChatNamePlaceholder" />
-      <input type="email" name="email" required placeholder="Your Email" data-i18n="liveChatEmailPlaceholder" />
-      <textarea name="message" required placeholder="Your Message" data-i18n="liveChatMessagePlaceholder"></textarea>
-      <button type="submit" data-i18n="submitButton">Submit Form</button>
-    </form>
-  </section>
+    <section class="social-media">
+      <h2 data-i18n="followUs">Follow Us</h2>
+      <ul class="social-icons">
+        <li><a href="#" aria-label="Facebook">ⓕ</a></li>
+        <li><a href="#" aria-label="Twitter">𝕏</a></li>
+        <li><a href="#" aria-label="Instagram">🅾</a></li>
+        <li><a href="#" aria-label="LinkedIn">[in]</a></li>
+      </ul>
+    </section>
+  </main>
 
-  <!-- Chatbot (keep near the end for clarity) -->
-  <div id="chatbot" class="chatbot">
-    <div class="chat-header">
-      <span data-i18n="chatbotTitle">SwiftDelivery Bot</span>
-      <button id="closeChatbot" aria-label="Close chat">✖</button>
-    </div>
-    <div class="chat-body" id="chatBody">
-      <div class="bot-message" data-i18n="chatbotGreeting">Hi there! How can I help you today?</div>
-    </div>
-    <div class="chat-input">
-      <input type="text" id="chatMessage" placeholder="Type your message..." data-i18n="chatMessagePlaceholder" />
-      <button id="sendChat" type="button" data-i18n="sendButton">Send</button>
-    </div>
-  </div>
-
-  <!-- Newsletter Signup -->
-  <section class="newsletter">
-    <h2 data-i18n="newsletterTitle">Stay Updated</h2>
-    <p data-i18n="newsletterText">Subscribe to our newsletter for airfreight tips, updates, and exclusive offers.</p>
-    <form id="newsletterForm">
-      <label for="newsletterEmail" data-i18n="emailLabel">Email</label>
-      <input type="email" id="newsletterEmail" name="newsletterEmail" required />
-      <button type="submit" data-i18n="subscribeButton">Subscribe</button>
-    </form>
-  </section>
-
-  <!-- Social Media Links -->
-  <section class="social-media">
-    <h2 data-i18n="followUs">Follow Us</h2>
-    <ul class="social-icons">
-      <li><a href="#" aria-label="Facebook">ⓕ</a></li>
-      <li><a href="#" aria-label="Twitter">𝕏</a></li>
-      <li><a href="#" aria-label="Instagram">🅾</a></li>
-      <li><a href="#" aria-label="LinkedIn">[in]</a></li>
-    </ul>
-  </section>
-
-  <!-- Footer -->
   <footer class="footer">
     <div class="footer-links">
       <div class="footer-column">
@@ -306,32 +1247,579 @@
     </div>
   </footer>
 
-  <!-- External libraries and widgets -->
+  <!-- Lottie animation -->
   <script src="https://unpkg.com/@lottiefiles/lottie-player@latest/dist/lottie-player.js"></script>
-  <lottie-player src="https://assets2.lottiefiles.com/packages/lf20_hzgq1iov.json" background="transparent" speed="1" style="width: 60px; height: 60px;" loop autoplay></lottie-player>
+  <lottie-player
+    src="https://assets2.lottiefiles.com/packages/lf20_hzgq1iov.json"
+    background="transparent"
+    speed="1"
+    style="width: 60px; height: 60px;"
+    loop
+    autoplay
+  ></lottie-player>
 
-  <!-- AOS (Animate On Scroll) script - ensure it's loaded before calling init -->
+  <!-- AOS animation -->
   <script src="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.js"></script>
   <script>
-    if (window.AOS && typeof AOS.init === 'function') {
+    if (window.AOS && typeof AOS.init === "function") {
       AOS.init();
     }
   </script>
 
+  <!-- Tawk.to live chat (replace YOUR_PROPERTY_ID) -->
   <script type="text/javascript">
-    var Tawk_API=Tawk_API||{}, Tawk_LoadStart=new Date();
-    (function(){
-      var s=document.createElement("script");
-      s.async=true;
-      s.src='https://embed.tawk.to/YOUR_PROPERTY_ID/default';
-      s.charset='UTF-8';
-      // crossorigin should be 'anonymous' or 'use-credentials' — use 'anonymous' for embeds
-      s.setAttribute('crossorigin','anonymous');
+    var Tawk_API = Tawk_API || {},
+      Tawk_LoadStart = new Date();
+    (function () {
+      var s = document.createElement("script");
+      s.async = true;
+      s.src = "https://embed.tawk.to/YOUR_PROPERTY_ID/default";
+      s.charset = "UTF-8";
+      s.setAttribute("crossorigin", "anonymous");
       document.body.appendChild(s);
     })();
   </script>
-  
-  <!-- Load main script at the end -->
+
+  <!-- Leaflet -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+
+  <!-- Client-side AI model (no API key) -->
   <script src="script.js"></script>
+  <script type="module" src="/src/main.jsx"></script>
+  
+  <!-- Video Autoplay Script -->
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      const video = document.getElementById('background-video');
+      
+      // Ensure video plays on page load
+      function playVideo() {
+        if (video) {
+          video.play().catch(function(error) {
+            console.log('Autoplay was prevented:', error);
+            // Fallback: try to play on first user interaction
+            document.addEventListener('click', function playOnFirstClick() {
+              video.play().catch(e => console.log('Video play failed:', e));
+              document.removeEventListener('click', playOnFirstClick);
+            }, { once: true });
+          });
+        }
+      }
+      
+      // Try to play immediately
+      playVideo();
+      
+      // Also try when page becomes visible
+      document.addEventListener('visibilitychange', function() {
+        if (!document.hidden && video && video.paused) {
+          playVideo();
+        }
+      });
+    });
+  </script>
+  
+
+  
+  <!-- Performance Optimizations Script -->
+  <script>
+    // Lazy Loading for Images
+    document.addEventListener('DOMContentLoaded', function() {
+      if ('IntersectionObserver' in window) {
+        const imageObserver = new IntersectionObserver((entries, observer) => {
+          entries.forEach(entry => {
+            if (entry.isIntersecting) {
+              const img = entry.target;
+              img.src = img.dataset.src || img.src;
+              img.classList.add('loaded');
+              observer.unobserve(img);
+            }
+          });
+        });
+
+        document.querySelectorAll('img[loading="lazy"]').forEach(img => {
+          imageObserver.observe(img);
+        });
+      }
+    });
+
+    // WebP Support Detection
+    function checkWebPSupport() {
+      return new Promise(resolve => {
+        const webP = new Image();
+        webP.onload = webP.onerror = () => {
+          resolve(webP.height === 2);
+        };
+        webP.src = 'data:image/webp;base64,UklGRjoAAABXRUJQVlA4IC4AAACyAgCdASoCAAIALmk0mk0iIiIiIgBoSygABc6WWgAA/veff/0PP8bA//LwYAAA';
+      });
+    }
+
+    // Optimize images based on WebP support
+    checkWebPSupport().then(hasWebP => {
+      if (!hasWebP) {
+        document.querySelectorAll('img[src$=".webp"]').forEach(img => {
+          img.src = img.src.replace('.webp', '.jpg');
+        });
+      }
+    });
+
+    // Preload critical resources
+    function preloadResource(url, as = 'script') {
+      const link = document.createElement('link');
+      link.rel = 'preload';
+      link.href = url;
+      link.as = as;
+      document.head.appendChild(link);
+    }
+
+    // Service Worker Registration (for offline support)
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('/sw.js')
+          .then(registration => {
+            console.log('SW registered: ', registration);
+          })
+          .catch(registrationError => {
+            console.log('SW registration failed: ', registrationError);
+          });
+      });
+    }
+
+    // Critical Resource Hints
+    preloadResource('https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.js', 'script');
+    preloadResource('https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js', 'script');
+
+    // Counter Animation
+    function animateCounter(element, target, suffix = '') {
+      const duration = 2000;
+      const start = 0;
+      const increment = target / (duration / 16);
+      let current = start;
+      
+      const timer = setInterval(() => {
+        current += increment;
+        if (current >= target) {
+          current = target;
+          clearInterval(timer);
+        }
+        element.textContent = Math.floor(current) + suffix;
+      }, 16);
+    }
+
+    // Intersection Observer for animations
+    const observerOptions = {
+      threshold: 0.3,
+      rootMargin: '0px 0px -100px 0px'
+    };
+
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('animate');
+          
+          // Animate counters
+          const counters = entry.target.querySelectorAll('.stat-item h3');
+          counters.forEach(counter => {
+            const text = counter.textContent;
+            const number = parseFloat(text.replace(/[^0-9.]/g, ''));
+            const suffix = text.replace(/[0-9.]/g, '');
+            
+            if (!counter.classList.contains('animated')) {
+              counter.classList.add('animated', 'counter');
+              animateCounter(counter, number, suffix);
+            }
+          });
+        }
+      });
+    }, observerOptions);
+
+    // Observe elements
+    document.addEventListener('DOMContentLoaded', () => {
+      const animateElements = document.querySelectorAll('.intro-section, .service-card, .testimonial-card');
+      animateElements.forEach(el => observer.observe(el));
+    });
+
+    // Parallax effect for hero
+    window.addEventListener('scroll', () => {
+      const scrolled = window.pageYOffset;
+      const hero = document.querySelector('.hero');
+      if (hero) {
+        hero.style.transform = `translateY(${scrolled * 0.5}px)`;
+      }
+    });
+
+    // Ripple effect for buttons
+    document.addEventListener('click', function(e) {
+      if (e.target.classList.contains('cta-button') || e.target.classList.contains('btn')) {
+        const button = e.target;
+        const ripple = document.createElement('span');
+        const rect = button.getBoundingClientRect();
+        const size = Math.max(rect.width, rect.height);
+        const x = e.clientX - rect.left - size / 2;
+        const y = e.clientY - rect.top - size / 2;
+        
+        ripple.style.width = ripple.style.height = size + 'px';
+        ripple.style.left = x + 'px';
+        ripple.style.top = y + 'px';
+        ripple.classList.add('ripple');
+        
+        button.appendChild(ripple);
+        
+        setTimeout(() => {
+          ripple.remove();
+        }, 600);
+      }
+    });
+  </script>
+
+  <style>
+    .ripple {
+      position: absolute;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.6);
+      transform: scale(0);
+      animation: ripple-animation 0.6s ease-out;
+      pointer-events: none;
+    }
+
+    @keyframes ripple-animation {
+      to {
+        transform: scale(4);
+        opacity: 0;
+      }
+    }
+  </style>
+
+  <!-- Initialize Accessibility -->
+  <script>
+    document.addEventListener('DOMContentLoaded', initAccessibility);
+  </script>
+
+
+
+  <!-- Interactive Elements Script -->
+  <script>
+    // Region data for world map
+    const regionData = {
+      'north-america': {
+        name: 'North America',
+        hubs: 'New York, Los Angeles, Toronto, Mexico City',
+        shipments: '45,234',
+        growth: '+12%'
+      },
+      'europe': {
+        name: 'Europe',
+        hubs: 'London, Frankfurt, Paris, Amsterdam',
+        shipments: '38,921',
+        growth: '+8%'
+      },
+      'asia': {
+        name: 'Asia',
+        hubs: 'Tokyo, Shanghai, Singapore, Dubai',
+        shipments: '52,187',
+        growth: '+18%'
+      },
+      'south-america': {
+        name: 'South America',
+        hubs: 'São Paulo, Buenos Aires, Lima',
+        shipments: '15,432',
+        growth: '+15%'
+      },
+      'africa': {
+        name: 'Africa',
+        hubs: 'Cairo, Johannesburg, Lagos',
+        shipments: '12,098',
+        growth: '+22%'
+      },
+      'oceania': {
+        name: 'Oceania',
+        hubs: 'Sydney, Melbourne, Auckland',
+        shipments: '18,765',
+        growth: '+10%'
+      }
+    };
+
+    // World Map Interaction
+    document.addEventListener('DOMContentLoaded', function() {
+      const regions = document.querySelectorAll('.map-region');
+      const regionInfo = document.getElementById('regionInfo');
+
+      regions.forEach(region => {
+        region.addEventListener('click', function() {
+          const regionKey = this.dataset.region;
+          const data = regionData[regionKey];
+          
+          if (data) {
+            regionInfo.innerHTML = `
+              <h3>${data.name}</h3>
+              <p><strong>Major Hubs:</strong> ${data.hubs}</p>
+              <p><strong>Monthly Shipments:</strong> ${data.shipments}</p>
+              <p><strong>Growth Rate:</strong> <span style="color: #10b981;">${data.growth}</span></p>
+            `;
+            
+            // Add animation
+            regionInfo.style.animation = 'none';
+            setTimeout(() => {
+              regionInfo.style.animation = 'fadeIn 0.5s ease-in';
+            }, 10);
+          }
+        });
+      });
+    });
+
+    // Live Tracker Function
+    function trackShipment() {
+      const input = document.getElementById('liveTrackingInput');
+      const status = document.getElementById('trackerStatus');
+      
+      if (input.value.trim()) {
+        status.style.display = 'block';
+        
+        // Simulate tracking animation
+        const progressFill = status.querySelector('.progress-fill');
+        progressFill.style.width = '0%';
+        
+        setTimeout(() => {
+          progressFill.style.width = '65%';
+        }, 500);
+        
+        // Update status text
+        const statusText = status.querySelector('.status-text');
+        statusText.textContent = 'In Transit - Frankfurt International Airport';
+      }
+    }
+
+    // Pricing Calculator
+    function calculatePrice() {
+      const weight = parseFloat(document.getElementById('calcWeight').value) || 0;
+      const length = parseFloat(document.getElementById('calcLength').value) || 0;
+      const width = parseFloat(document.getElementById('calcWidth').value) || 0;
+      const height = parseFloat(document.getElementById('calcHeight').value) || 0;
+      const destination = document.getElementById('calcDestination').value;
+      const service = document.getElementById('calcService').value;
+      
+      if (weight > 0 && destination) {
+        const volume = (length * width * height) / 5000; // Dim weight calculation
+        const chargeableWeight = Math.max(weight, volume);
+        
+        // Base rates by destination (increased for premium pricing)
+        const baseRates = {
+          'north-america': 45,
+          'europe': 36,
+          'asia': 54,
+          'south-america': 60,
+          'africa': 75,
+          'oceania': 66
+        };
+
+        // Currency symbols by region
+        const currencySymbols = {
+          'north-america': '$',
+          'europe': '€',
+          'asia': '$',
+          'south-america': '$',
+          'africa': '$',
+          'oceania': 'A$'
+        };
+        
+        // Service multipliers
+        const serviceMultipliers = {
+          'express': 2.0,
+          'standard': 1.0,
+          'economy': 0.7
+        };
+        
+        const baseRate = (baseRates[destination] || 15) * chargeableWeight;
+        const serviceMultiplier = serviceMultipliers[service] || 1.0;
+        const fuelSurcharge = baseRate * 0.15;
+        const insurance = baseRate * 0.05;
+        
+        const total = (baseRate * serviceMultiplier) + fuelSurcharge + insurance;
+        const currency = currencySymbols[destination] || '$';
+
+        // Update display with regional currency
+        document.getElementById('priceValue').textContent = `${currency}${total.toFixed(2)}`;
+        document.getElementById('baseRate').textContent = `${currency}${(baseRate * serviceMultiplier).toFixed(2)}`;
+        document.getElementById('fuelSurcharge').textContent = `${currency}${fuelSurcharge.toFixed(2)}`;
+        document.getElementById('insurance').textContent = `${currency}${insurance.toFixed(2)}`;
+        document.getElementById('totalPrice').textContent = `${currency}${total.toFixed(2)}`;
+        
+        document.getElementById('calcResults').style.display = 'block';
+      }
+    }
+
+    // Add event listeners for calculator
+    document.addEventListener('DOMContentLoaded', function() {
+      const calcInputs = ['calcWeight', 'calcLength', 'calcWidth', 'calcHeight', 'calcDestination', 'calcService'];
+      calcInputs.forEach(id => {
+        const element = document.getElementById(id);
+        if (element) {
+          element.addEventListener('input', calculatePrice);
+          element.addEventListener('change', calculatePrice);
+        }
+      });
+    });
+
+    // Accessibility Features
+    function initAccessibility() {
+      // Keyboard Navigation
+      document.addEventListener('keydown', function(e) {
+        // Escape key closes modals and dropdowns
+        if (e.key === 'Escape') {
+          closeAllDropdowns();
+          closeAllModals();
+        }
+        
+        // Tab trap for modals
+        if (e.key === 'Tab') {
+          handleTabNavigation(e);
+        }
+      });
+
+      // ARIA live regions for dynamic content
+      setupLiveRegions();
+      
+      // Focus management
+      setupFocusManagement();
+    }
+
+    function closeAllDropdowns() {
+      document.querySelectorAll('.mega-menu').forEach(menu => {
+        menu.style.opacity = '0';
+        menu.style.visibility = 'hidden';
+      });
+    }
+
+    function closeAllModals() {
+      document.querySelectorAll('[role="dialog"]').forEach(modal => {
+        modal.style.display = 'none';
+      });
+    }
+
+    function handleTabNavigation(e) {
+      const activeElement = document.activeElement;
+      const modal = activeElement.closest('[role="dialog"]');
+      
+      if (modal) {
+        const focusableElements = modal.querySelectorAll(
+          'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
+        );
+        const firstElement = focusableElements[0];
+        const lastElement = focusableElements[focusableElements.length - 1];
+        
+        if (e.shiftKey && activeElement === firstElement) {
+          e.preventDefault();
+          lastElement.focus();
+        } else if (!e.shiftKey && activeElement === lastElement) {
+          e.preventDefault();
+          firstElement.focus();
+        }
+      }
+    }
+
+    function setupLiveRegions() {
+      // Create live regions for screen readers
+      const statusRegion = document.createElement('div');
+      statusRegion.setAttribute('aria-live', 'polite');
+      statusRegion.setAttribute('aria-atomic', 'true');
+      statusRegion.className = 'sr-only';
+      statusRegion.id = 'status-region';
+      document.body.appendChild(statusRegion);
+
+      const alertRegion = document.createElement('div');
+      alertRegion.setAttribute('aria-live', 'assertive');
+      alertRegion.setAttribute('aria-atomic', 'true');
+      alertRegion.className = 'sr-only';
+      alertRegion.id = 'alert-region';
+      document.body.appendChild(alertRegion);
+    }
+
+    function setupFocusManagement() {
+      // Add proper labels to unlabeled elements
+      document.querySelectorAll('input, textarea, select').forEach(element => {
+        if (!element.getAttribute('aria-label') && !element.getAttribute('aria-labelledby')) {
+          const label = element.closest('label') || 
+                     document.querySelector(`label[for="${element.id}"]`) ||
+                     element.getAttribute('placeholder');
+          if (label) {
+            if (label instanceof HTMLLabelElement) {
+              label.setAttribute('aria-label', label.textContent);
+            } else {
+              element.setAttribute('aria-label', label);
+            }
+          }
+        }
+      });
+    }
+
+    function announceToScreenReader(message, priority = 'polite') {
+      const regionId = priority === 'assertive' ? 'alert-region' : 'status-region';
+      const region = document.getElementById(regionId);
+      if (region) {
+        region.textContent = message;
+        setTimeout(() => {
+          region.textContent = '';
+        }, 1000);
+      }
+    }
+
+    // Add scroll progress indicator
+    window.addEventListener('scroll', function() {
+      const scrolled = (window.pageYOffset / (document.documentElement.scrollHeight - window.innerHeight)) * 100;
+      const header = document.querySelector('.header');
+      const progressBar = document.querySelector('.scroll-progress .progress-fill');
+      
+      if (progressBar) {
+        progressBar.style.width = scrolled + '%';
+      }
+      
+      if (scrolled > 5) {
+        header.classList.add('scrolled');
+      } else {
+        header.classList.remove('scrolled');
+      }
+    });
+
+    // Timeline Animation
+    function animateTimeline() {
+      const steps = document.querySelectorAll('.timeline-step');
+      const progress = document.getElementById('timelineProgress');
+      
+      steps.forEach((step, index) => {
+        setTimeout(() => {
+          step.classList.add('active');
+          progress.style.width = ((index + 1) / steps.length * 100) + '%';
+        }, index * 800);
+      });
+    }
+
+    function resetTimeline() {
+      const steps = document.querySelectorAll('.timeline-step');
+      const progress = document.getElementById('timelineProgress');
+      
+      steps.forEach(step => step.classList.remove('active'));
+      progress.style.width = '0%';
+    }
+
+    // Before/After Sliders
+    document.addEventListener('DOMContentLoaded', function() {
+      const sliders = document.querySelectorAll('.comparison-slider .slider');
+      
+      sliders.forEach(slider => {
+        const container = slider.parentElement;
+        const beforeImage = container.querySelector('.before-image');
+        const afterImage = container.querySelector('.after-image');
+        
+        slider.addEventListener('input', function() {
+          const value = this.value;
+          beforeImage.style.clipPath = `inset(0 ${100 - value}% 0 0)`;
+          afterImage.style.clipPath = `inset(0 0 0 ${value}%)`;
+        });
+        
+        // Initialize
+        beforeImage.style.clipPath = 'inset(0 50% 0 0)';
+        afterImage.style.clipPath = 'inset(0 0 0 50%)';
+      });
+    });
+  </script>
 </body>
 </html>

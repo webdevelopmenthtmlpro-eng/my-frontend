@@ -1,0 +1,1110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SwiftDelivery Admin Dashboard</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+      background-color: #f5f7fa;
+      color: #333;
+    }
+
+    header {
+      background-color: #4f46e5;
+      color: white;
+      padding: 1rem 2rem;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .logo {
+      font-size: 1.5rem;
+      font-weight: bold;
+    }
+
+    .user-info {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .user-info button {
+      background-color: rgba(255,255,255,0.2);
+      border: none;
+      color: white;
+      padding: 0.5rem 1rem;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: background-color 0.2s;
+    }
+
+    .user-info button:hover {
+      background-color: rgba(255,255,255,0.3);
+    }
+
+    .container {
+      display: flex;
+      height: calc(100vh - 70px);
+    }
+
+    .sidebar {
+      width: 250px;
+      background-color: white;
+      box-shadow: 2px 0 4px rgba(0,0,0,0.05);
+      padding: 1.5rem 0;
+    }
+
+    .nav-item {
+      padding: 0.75rem 1.5rem;
+      cursor: pointer;
+      transition: background-color 0.2s;
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .nav-item:hover, .nav-item.active {
+      background-color: #f0f4ff;
+    }
+
+    .nav-item.active {
+      border-left: 3px solid #4f46e5;
+      font-weight: 600;
+    }
+
+    .main-content {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .content-header {
+      padding: 1.5rem 2rem;
+      background-color: white;
+      border-bottom: 1px solid #e5e7eb;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .content-body {
+      flex: 1;
+      padding: 2rem;
+      overflow-y: auto;
+    }
+
+    .card {
+      background-color: white;
+      border-radius: 8px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+      padding: 1.5rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .card-title {
+      font-size: 1.25rem;
+      font-weight: 600;
+      margin-bottom: 1rem;
+    }
+
+    /* Messaging Styles */
+    .messaging-container {
+      display: flex;
+      height: 100%;
+    }
+
+    .conversations-list {
+      width: 300px;
+      border-right: 1px solid #e5e7eb;
+      overflow-y: auto;
+    }
+
+    .conversation-item {
+      padding: 1rem;
+      border-bottom: 1px solid #f0f0f0;
+      cursor: pointer;
+      transition: background-color 0.2s;
+      display: flex;
+      justify-content: space-between;
+    }
+
+    .conversation-item:hover {
+      background-color: #f9f9f9;
+    }
+
+    .conversation-item.active {
+      background-color: #f0f4ff;
+    }
+
+    .conversation-info {
+      flex: 1;
+    }
+
+    .conversation-name {
+      font-weight: 600;
+      margin-bottom: 0.25rem;
+    }
+
+    .conversation-preview {
+      font-size: 0.875rem;
+      color: #666;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      max-width: 200px;
+    }
+
+    .conversation-time {
+      font-size: 0.75rem;
+      color: #999;
+    }
+
+    .unread-indicator {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background-color: #4f46e5;
+      margin-top: 0.5rem;
+    }
+
+    .chat-window {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .chat-header {
+      padding: 1rem;
+      border-bottom: 1px solid #e5e7eb;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .chat-messages {
+      flex: 1;
+      padding: 1rem;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+    }
+
+    .message {
+      max-width: 70%;
+      padding: 0.75rem 1rem;
+      border-radius: 18px;
+      word-wrap: break-word;
+    }
+
+    .message-customer {
+      align-self: flex-start;
+      background-color: #f1f3f5;
+      color: #333;
+    }
+
+    .message-admin {
+      align-self: flex-end;
+      background-color: #4f46e5;
+      color: white;
+    }
+
+    .message-time {
+      font-size: 0.75rem;
+      color: #999;
+      margin-top: 0.25rem;
+    }
+
+    .message-admin .message-time {
+      color: rgba(255,255,255,0.7);
+      text-align: right;
+    }
+
+    .chat-input-container {
+      padding: 1rem;
+      border-top: 1px solid #e5e7eb;
+      display: flex;
+      gap: 0.5rem;
+    }
+
+    .chat-input {
+      flex: 1;
+      padding: 0.75rem;
+      border: 1px solid #e5e7eb;
+      border-radius: 24px;
+      outline: none;
+      font-size: 0.95rem;
+    }
+
+    .chat-send-button {
+      padding: 0.75rem 1.25rem;
+      background-color: #4f46e5;
+      color: white;
+      border: none;
+      border-radius: 24px;
+      cursor: pointer;
+      font-weight: 600;
+      transition: background-color 0.2s;
+    }
+
+    .chat-send-button:hover {
+      background-color: #4338ca;
+    }
+
+    .empty-state {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100%;
+      color: #999;
+    }
+
+    .empty-state-icon {
+      font-size: 3rem;
+      margin-bottom: 1rem;
+    }
+
+    /* User Management Styles */
+    .users-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 1.5rem;
+    }
+
+    .user-card {
+      background-color: white;
+      border-radius: 8px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+      padding: 1.5rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .user-info {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .user-avatar {
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      background-color: #e5e7eb;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 600;
+      color: #4f46e5;
+    }
+
+    .user-details h3 {
+      margin-bottom: 0.25rem;
+    }
+
+    .user-details p {
+      font-size: 0.875rem;
+      color: #666;
+    }
+
+    .user-actions {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+
+    .btn {
+      padding: 0.5rem 1rem;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-weight: 500;
+      transition: all 0.2s;
+    }
+
+    .btn-primary {
+      background-color: #4f46e5;
+      color: white;
+    }
+
+    .btn-primary:hover {
+      background-color: #4338ca;
+    }
+
+    .btn-secondary {
+      background-color: #e5e7eb;
+      color: #333;
+    }
+
+    .btn-secondary:hover {
+      background-color: #d1d5db;
+    }
+
+    .btn-success {
+      background-color: #10b981;
+      color: white;
+    }
+
+    .btn-success:hover {
+      background-color: #059669;
+    }
+
+    .notification-badge {
+      background-color: #ef4444;
+      color: white;
+      font-size: 0.75rem;
+      padding: 0.125rem 0.5rem;
+      border-radius: 12px;
+      margin-left: 0.5rem;
+    }
+
+    /* Status indicator */
+    .status-indicator {
+      display: inline-block;
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      margin-right: 0.5rem;
+    }
+
+    .status-online {
+      background-color: #10b981;
+    }
+
+    .status-offline {
+      background-color: #6b7280;
+    }
+
+    .status-away {
+      background-color: #f59e0b;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="logo">SwiftDelivery Admin Dashboard</div>
+    <div class="user-info">
+      <span id="adminName">Admin User</span>
+      <button id="logoutBtn">Logout</button>
+    </div>
+  </header>
+
+  <div class="container">
+    <div class="sidebar">
+      <div class="nav-item active" data-page="messaging">
+        <span>💬</span>
+        <span>Direct Messaging</span>
+      </div>
+      <div class="nav-item" data-page="users">
+        <span>👥</span>
+        <span>User Management</span>
+      </div>
+      <div class="nav-item" data-page="tracking">
+        <span>📍</span>
+        <span>Package Tracking</span>
+      </div>
+    </div>
+
+    <div class="main-content">
+      <!-- Messaging Page -->
+      <div id="messaging-page" class="page-content">
+        <div class="content-header">
+          <h2>Direct Messaging</h2>
+          <button id="refreshConversations" class="btn btn-secondary">Refresh</button>
+        </div>
+        <div class="content-body">
+          <div class="messaging-container">
+            <div class="conversations-list" id="conversationsList">
+              <!-- Conversations will be loaded here -->
+            </div>
+            <div class="chat-window" id="chatWindow">
+              <div class="empty-state" id="emptyChatState">
+                <div class="empty-state-icon">💬</div>
+                <h3>Select a conversation to start messaging</h3>
+                <p>Choose a customer from the list to view and send messages</p>
+              </div>
+              <div id="activeChat" style="display: none;">
+                <div class="chat-header">
+                  <div>
+                    <h3 id="chatCustomerName">Customer Name</h3>
+                    <p id="chatCustomerEmail">customer@example.com</p>
+                  </div>
+                  <div>
+                    <span class="status-indicator status-online"></span>
+                    <span>Online</span>
+                  </div>
+                </div>
+                <div class="chat-messages" id="chatMessages">
+                  <!-- Messages will be loaded here -->
+                </div>
+                <div class="chat-input-container">
+                  <input type="text" id="messageInput" class="chat-input" placeholder="Type a message...">
+                  <button id="sendMessage" class="chat-send-button">Send</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- User Management Page -->
+      <div id="users-page" class="page-content" style="display: none;">
+        <div class="content-header">
+          <h2>User Management</h2>
+          <div>
+            <button id="refreshUsers" class="btn btn-secondary">Refresh</button>
+            <button id="addUser" class="btn btn-primary">Add User</button>
+          </div>
+        </div>
+        <div class="content-body">
+          <div class="users-grid" id="usersGrid">
+            <!-- Users will be loaded here -->
+          </div>
+        </div>
+      </div>
+
+      <!-- Tracking Page -->
+      <div id="tracking-page" class="page-content" style="display: none;">
+        <div class="content-header">
+          <h2>Package Tracking</h2>
+          <button id="refreshTracking" class="btn btn-secondary">Refresh</button>
+        </div>
+        <div class="content-body">
+          <div class="card">
+            <h3 class="card-title">Active Shipments</h3>
+            <div id="trackingList">
+              <!-- Tracking information will be loaded here -->
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Configuration
+    const BASE_URL = "http://localhost:5000";
+    let currentConversation = null;
+    let adminToken = localStorage.getItem('adminToken');
+    let adminData = JSON.parse(localStorage.getItem('adminData') || '{}');
+    
+    // Store admin ID for conversation IDs
+    if (adminData.id) {
+      localStorage.setItem('adminId', adminData.id);
+    }
+
+    // Check if admin is logged in
+    function checkAuth() {
+      if (!adminToken) {
+        // Redirect to login page
+        window.location.href = "admin-login.html";
+        return false;
+      }
+      return true;
+    }
+
+    // Initialize admin dashboard
+    document.addEventListener('DOMContentLoaded', () => {
+      if (!checkAuth()) return;
+
+      // Set admin name
+      if (adminData.name) {
+        document.getElementById('adminName').textContent = adminData.name;
+      }
+
+      // Setup navigation
+      setupNavigation();
+
+      // Load initial data
+      loadConversations();
+
+      // Setup messaging
+      setupMessaging();
+
+      // Setup user management
+      setupUserManagement();
+
+      // Setup tracking
+      setupTracking();
+
+      // Setup logout
+      document.getElementById('logoutBtn').addEventListener('click', logout);
+
+      // Auto-refresh conversations every 10 seconds
+      setInterval(() => {
+        if (document.getElementById('messaging-page').style.display !== 'none') {
+          loadConversations();
+          if (currentConversation) {
+            loadMessages(currentConversation.id);
+          }
+        }
+      }, 10000);
+    });
+
+    // Setup navigation
+    function setupNavigation() {
+      const navItems = document.querySelectorAll('.nav-item');
+
+      navItems.forEach(item => {
+        item.addEventListener('click', () => {
+          // Remove active class from all items
+          navItems.forEach(nav => nav.classList.remove('active'));
+
+          // Add active class to clicked item
+          item.classList.add('active');
+
+          // Hide all pages
+          document.querySelectorAll('.page-content').forEach(page => {
+            page.style.display = 'none';
+          });
+
+          // Show selected page
+          const pageId = `${item.dataset.page}-page`;
+          document.getElementById(pageId).style.display = 'block';
+
+          // Load data for selected page
+          if (item.dataset.page === 'messaging') {
+            loadConversations();
+          } else if (item.dataset.page === 'users') {
+            loadUsers();
+          } else if (item.dataset.page === 'tracking') {
+            loadTrackingData();
+          }
+        });
+      });
+    }
+
+    // Setup messaging functionality
+    function setupMessaging() {
+      // Refresh conversations button
+      document.getElementById('refreshConversations').addEventListener('click', loadConversations);
+
+      // Send message button
+      document.getElementById('sendMessage').addEventListener('click', sendMessage);
+
+      // Enter key to send message
+      document.getElementById('messageInput').addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') {
+          sendMessage();
+        }
+      });
+    }
+
+    // Logout function
+    function logout() {
+      localStorage.removeItem('adminToken');
+      localStorage.removeItem('adminData');
+      window.location.href = "admin-login.html";
+    }
+    let adminToken = null;
+    let adminData = null;
+
+    // Initialize
+    document.addEventListener('DOMContentLoaded', () => {
+      // Check if admin is logged in
+      adminToken = localStorage.getItem('adminToken');
+      if (!adminToken) {
+        // For demo purposes, create a mock admin token
+        adminToken = 'mock-admin-token';
+        localStorage.setItem('adminToken', adminToken);
+        adminData = { id: 'admin123', name: 'Admin User', email: 'admin@swiftdelivery.com' };
+        localStorage.setItem('adminData', JSON.stringify(adminData));
+      } else {
+        adminData = JSON.parse(localStorage.getItem('adminData'));
+      }
+      
+      // Store admin ID for conversation IDs
+      localStorage.setItem('adminId', adminData.id);
+
+      // Update UI with admin info
+      if (adminData) {
+        document.getElementById('adminName').textContent = adminData.name;
+      }
+
+      // Setup navigation
+      setupNavigation();
+
+      // Setup logout
+      document.getElementById('logoutBtn').addEventListener('click', () => {
+        localStorage.removeItem('adminToken');
+        localStorage.removeItem('adminData');
+        window.location.reload();
+      });
+
+      // Load initial data
+      loadConversations();
+      loadUsers();
+      loadTrackingData();
+
+      // Set up refresh intervals
+      setInterval(() => {
+        loadConversations();
+        if (currentConversation) {
+          loadMessages(currentConversation.id);
+        }
+      }, 5000);
+
+      // Setup messaging functionality
+      setupMessaging();
+
+      // Setup user management
+      setupUserManagement();
+
+      // Setup tracking
+      setupTracking();
+
+      // Auto-refresh every 30 seconds
+      setInterval(() => {
+        loadConversations();
+        if (currentConversation) {
+          loadMessages(currentConversation.id);
+        }
+      }, 30000);
+    });
+
+    // Navigation setup
+    function setupNavigation() {
+      const navItems = document.querySelectorAll('.nav-item');
+      navItems.forEach(item => {
+        item.addEventListener('click', () => {
+          // Remove active class from all items and pages
+          navItems.forEach(navItem => navItem.classList.remove('active'));
+          document.querySelectorAll('.page-content').forEach(page => {
+            page.style.display = 'none';
+          });
+
+          // Add active class to clicked item
+          item.classList.add('active');
+
+          // Show corresponding page
+          const pageName = item.getAttribute('data-page');
+          document.getElementById(`${pageName}-page`).style.display = 'block';
+        });
+      });
+    }
+
+    // Messaging functionality
+    function setupMessaging() {
+      // Refresh conversations button
+      document.getElementById('refreshConversations').addEventListener('click', loadConversations);
+
+      // Send message button
+      document.getElementById('sendMessage').addEventListener('click', sendMessage);
+
+      // Enter key to send message
+      document.getElementById('messageInput').addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') {
+          sendMessage();
+        }
+      });
+    }
+
+    // Load conversations
+    async function loadConversations() {
+      try {
+        // Get verified users list
+        const response = await fetch(`${BASE_URL}/api/verified-users-list`, {
+          headers: {
+            'Authorization': `Bearer ${adminToken}`
+          }
+        });
+
+        if (!response.ok) {
+          throw new Error('Failed to fetch conversations');
+        }
+
+        const users = await response.json();
+        const conversationsList = document.getElementById('conversationsList');
+
+        if (users.length === 0) {
+          conversationsList.innerHTML = '<div class="empty-state"><p>No conversations yet</p></div>';
+          return;
+        }
+
+        // Create conversation items with message preview
+        const conversationPromises = users.map(async user => {
+          const adminId = localStorage.getItem('adminId');
+          const conversationId = [adminId, user._id].sort().join('_');
+          
+          // Get last message and unread count
+          try {
+            const messagesResponse = await fetch(`${BASE_URL}/api/conversation/${user._id}`, {
+              headers: {
+                'Authorization': `Bearer ${adminToken}`
+              }
+            });
+            
+            let preview = 'No messages yet';
+            let time = '-';
+            let unreadCount = 0;
+            
+            if (messagesResponse.ok) {
+              const messages = await messagesResponse.json();
+              if (messages.length > 0) {
+                const lastMessage = messages[messages.length - 1];
+                preview = lastMessage.message.length > 30 
+                  ? lastMessage.message.substring(0, 30) + '...' 
+                  : lastMessage.message;
+                time = new Date(lastMessage.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+                
+                // Count unread messages (from customer)
+                unreadCount = messages.filter(msg => !msg.isFromAdmin && !msg.read).length;
+              }
+            }
+            
+            return `
+              <div class="conversation-item" data-user-id="${user._id}" data-conversation-id="${conversationId}">
+                <div class="conversation-info">
+                  <div class="conversation-name">${user.name}</div>
+                  <div class="conversation-preview">${preview}</div>
+                </div>
+                <div>
+                  <div class="conversation-time">${time}</div>
+                  <div class="unread-indicator" style="display: ${unreadCount > 0 ? 'flex' : 'none'};">${unreadCount}</div>
+                </div>
+              </div>
+            `;
+          } catch (error) {
+            console.error(`Error fetching conversation for ${user.name}:`, error);
+            return `
+              <div class="conversation-item" data-user-id="${user._id}" data-conversation-id="${conversationId}">
+                <div class="conversation-info">
+                  <div class="conversation-name">${user.name}</div>
+                  <div class="conversation-preview">No messages yet</div>
+                </div>
+                <div>
+                  <div class="conversation-time">-</div>
+                  <div class="unread-indicator" style="display: none;"></div>
+                </div>
+              </div>
+            `;
+          }
+        });
+        
+        // Wait for all conversations to be processed
+        const conversations = await Promise.all(conversationPromises);
+        conversationsList.innerHTML = conversations.join('');
+
+        // Add click event to conversation items
+        document.querySelectorAll('.conversation-item').forEach(item => {
+          item.addEventListener('click', () => {
+            const userId = item.getAttribute('data-user-id');
+            const conversationId = item.getAttribute('data-conversation-id');
+            const userName = item.querySelector('.conversation-name').textContent;
+            openConversation(userId, conversationId, userName);
+
+            // Update active state
+            document.querySelectorAll('.conversation-item').forEach(conv => {
+              conv.classList.remove('active');
+            });
+            item.classList.add('active');
+          });
+        });
+      } catch (error) {
+        console.error('Error loading conversations:', error);
+        document.getElementById('conversationsList').innerHTML = '<div class="empty-state"><p>Error loading conversations</p></div>';
+      }
+    }
+
+    // Open conversation
+    async function openConversation(userId, conversationId, userName) {
+      currentConversation = {
+        id: userId,
+        conversationId: conversationId,
+        name: userName
+      };
+
+      // Show active chat, hide empty state
+      document.getElementById('emptyChatState').style.display = 'none';
+      document.getElementById('activeChat').style.display = 'flex';
+
+      // Update chat header
+      document.getElementById('chatCustomerName').textContent = userName;
+
+      // Load messages
+      loadMessages(userId);
+    }
+
+    // Load messages
+    async function loadMessages(userId) {
+      try {
+        const response = await fetch(`${BASE_URL}/api/conversation/${userId}`, {
+          headers: {
+            'Authorization': `Bearer ${adminToken}`
+          }
+        });
+
+        if (!response.ok) {
+          throw new Error('Failed to load messages');
+        }
+
+        const messages = await response.json();
+        const chatMessages = document.getElementById('chatMessages');
+
+        if (messages.length === 0) {
+          chatMessages.innerHTML = '<div class="empty-state"><p>No messages yet. Start the conversation!</p></div>';
+          return;
+        }
+
+        chatMessages.innerHTML = messages.map(msg => {
+          const isAdmin = msg.senderId.isAdmin;
+          const time = new Date(msg.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+          const status = msg.read ? 'read' : (msg.isFromAdmin ? 'delivered' : 'sent');
+
+          return `
+            <div class="message ${isAdmin ? 'message-admin' : 'message-customer'}">
+              <div>${msg.message}</div>
+              <div class="message-time">${time} - ${status}</div>
+            </div>
+          `;
+        }).join('');
+
+        // Scroll to bottom
+        chatMessages.scrollTop = chatMessages.scrollHeight;
+
+        // Mark messages as read
+        markMessagesAsRead(currentConversation.conversationId);
+      } catch (error) {
+        console.error('Error loading messages:', error);
+        document.getElementById('chatMessages').innerHTML = '<div class="empty-state"><p>Error loading messages</p></div>';
+      }
+    }
+
+    // Send message
+    async function sendMessage() {
+      if (!currentConversation) return;
+
+      const messageInput = document.getElementById('messageInput');
+      const messageText = messageInput.value.trim();
+
+      if (!messageText) return;
+
+      try {
+        const response = await fetch(`${BASE_URL}/api/direct-message`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${adminToken}`
+          },
+          body: JSON.stringify({
+            recipientId: currentConversation.id,
+            message: messageText
+          })
+        });
+
+        if (!response.ok) {
+          throw new Error('Failed to send message');
+        }
+
+        // Clear input
+        messageInput.value = '';
+
+        // Reload messages
+        loadMessages(currentConversation.id);
+
+        // Update conversation preview
+        updateConversationPreview(currentConversation.id, messageText);
+        
+        // Refresh conversation list to update time and preview
+        loadConversations();
+      } catch (error) {
+        console.error('Error sending message:', error);
+        alert('Failed to send message. Please try again.');
+      }
+    }
+
+    // Mark messages as read
+    async function markMessagesAsRead(conversationId) {
+      try {
+        await fetch(`${BASE_URL}/api/messages-read/${conversationId}`, {
+          method: 'PUT',
+          headers: {
+            'Authorization': `Bearer ${adminToken}`
+          }
+        });
+        
+        // Update read status in UI
+        const customerMessages = document.querySelectorAll('.message-customer');
+        customerMessages.forEach(msg => {
+          const timeElement = msg.querySelector('.message-time');
+          if (timeElement) {
+            const currentText = timeElement.textContent;
+            if (!currentText.includes('read')) {
+              timeElement.textContent = currentText.replace(/(sent|delivered)/, 'read');
+            }
+          }
+        });
+      } catch (error) {
+        console.error('Error marking messages as read:', error);
+      }
+    }
+
+    // Update conversation preview
+    function updateConversationPreview(userId, messageText) {
+      const conversationItem = document.querySelector(`.conversation-item[data-user-id="${userId}"]`);
+      if (conversationItem) {
+        const preview = conversationItem.querySelector('.conversation-preview');
+        const time = conversationItem.querySelector('.conversation-time');
+
+        if (preview) {
+          preview.textContent = messageText;
+        }
+
+        if (time) {
+          time.textContent = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+        }
+      }
+    }
+
+    // User Management functionality
+    function setupUserManagement() {
+      // Refresh users button
+      document.getElementById('refreshUsers').addEventListener('click', loadUsers);
+
+      // Add user button
+      document.getElementById('addUser').addEventListener('click', () => {
+        alert('Add User functionality would open a modal to create a new user');
+      });
+    }
+
+    // Load users
+    async function loadUsers() {
+      try {
+        const response = await fetch(`${BASE_URL}/api/admin/users`, {
+          headers: {
+            'Authorization': `Bearer ${adminToken}`
+          }
+        });
+
+        if (!response.ok) {
+          throw new Error('Failed to fetch users');
+        }
+
+        const users = await response.json();
+        const usersGrid = document.getElementById('usersGrid');
+
+        if (users.length === 0) {
+          usersGrid.innerHTML = '<div class="empty-state"><p>No users found</p></div>';
+          return;
+        }
+
+        usersGrid.innerHTML = users.map(user => `
+          <div class="user-card">
+            <div class="user-info">
+              <div class="user-avatar">${user.name.charAt(0).toUpperCase()}</div>
+              <div class="user-details">
+                <h3>${user.name}</h3>
+                <p>${user.email}</p>
+              </div>
+            </div>
+            <div class="user-actions">
+              <button class="btn ${user.isVerified ? 'btn-secondary' : 'btn-success'}" onclick="toggleVerification('${user._id}', ${user.isVerified})">
+                ${user.isVerified ? 'Verified' : 'Verify'}
+              </button>
+              <button class="btn btn-primary" onclick="messageUser('${user._id}', '${user.name}')">
+                Message
+              </button>
+            </div>
+          </div>
+        `).join('');
+      } catch (error) {
+        console.error('Error loading users:', error);
+        document.getElementById('usersGrid').innerHTML = '<div class="empty-state"><p>Error loading users</p></div>';
+      }
+    }
+
+    // Toggle user verification
+    async function toggleVerification(userId, isVerified) {
+      if (isVerified) return; // Already verified
+
+      try {
+        const response = await fetch(`${BASE_URL}/api/admin/verify-user/${userId}`, {
+          method: 'PUT',
+          headers: {
+            'Authorization': `Bearer ${adminToken}`
+          }
+        });
+
+        if (!response.ok) {
+          throw new Error('Failed to verify user');
+        }
+
+        // Reload users
+        loadUsers();
+      } catch (error) {
+        console.error('Error verifying user:', error);
+        alert('Failed to verify user. Please try again.');
+      }
+    }
+
+    // Message user from user management
+    function messageUser(userId, userName) {
+      // Switch to messaging page
+      document.querySelector('[data-page="messaging"]').click();
+
+      // Find and open conversation
+      setTimeout(() => {
+        const conversationItem = document.querySelector(`.conversation-item[data-user-id="${userId}"]`);
+        if (conversationItem) {
+          conversationItem.click();
+        }
+      }, 100);
+    }
+
+    // Tracking functionality
+    function setupTracking() {
+      // Refresh tracking button
+      document.getElementById('refreshTracking').addEventListener('click', loadTrackingData);
+    }
+
+    // Load tracking data
+    async function loadTrackingData() {
+      try {
+        const response = await fetch(`${BASE_URL}/api/admin/tracking`, {
+          headers: {
+            'Authorization': `Bearer ${adminToken}`
+          }
+        });
+
+        if (!response.ok) {
+          throw new Error('Failed to fetch tracking data');
+        }
+
+        const trackingData = await response.json();
+        const trackingList = document.getElementById('trackingList');
+
+        if (trackingData.length === 0) {
+          trackingList.innerHTML = '<p>No active shipments</p>';
+          return;
+        }
+
+        trackingList.innerHTML = trackingData.map(tracking => `
+          <div class="card" style="margin-bottom: 1rem;">
+            <h4>Tracking ID: ${tracking.trackingId}</h4>
+            <p>Status: ${tracking.status}</p>
+            <p>Customer: ${tracking.user.fullName}</p>
+            <p>Email: ${tracking.user.email}</p>
+            <p>Location: ${tracking.location.lat}, ${tracking.location.lng}</p>
+            <p>Last Updated: ${new Date(tracking.updatedAt).toLocaleString()}</p>
+          </div>
+        `).join('');
+      } catch (error) {
+        console.error('Error loading tracking data:', error);
+        document.getElementById('trackingList').innerHTML = '<p>Error loading tracking data</p>';
+      }
+    }
+  </script>
+</body>
+</html>
